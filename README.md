@@ -11,7 +11,7 @@ UTTT_Project/
 ├── main.h
 ├── images/
 │
-├── src/
+├── Sources/
 │   ├── core/
 │   │   ├── Board.cpp
 │   │   ├── Game.cpp
@@ -28,7 +28,7 @@ UTTT_Project/
 │   └── utils/
 │       ├── Timer.cpp
 │
-├── include/
+├── Headers/
 │   ├── core/
 │   │   ├── Board.h
 │   │   ├── Game.h
