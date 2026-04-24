@@ -1,3 +1,5 @@
+```mermaid
+
 classDiagram
 
 class Game {
@@ -79,3 +81,5 @@ Minimax ..> MoveGenerator
 Adapter ..> Game
 Adapter ..> UltimateBoard
 Adapter ..> Move
+
+```
