@@ -23,7 +23,7 @@ UTTT_Project/
 │   │   ├── Heuristic.cpp
 │   │
 │   ├── interface/
-│   │   ├── Adapter.cpp   ← lien avec la lib
+│   │   ├── Adapter.cpp
 │
 │   └── utils/
 │       ├── Timer.cpp
