@@ -5,13 +5,14 @@
 ```
 UTTT_Project/
 │
-├── UTTT_Template.cbp   
-├── libUTTTLib.a       
-├── main.cpp  
+├── UTTT_Template.cbp
+├── libUTTTLib.a
+├── main.cpp
 ├── main.h
+│
 ├── images/
 │
-├── Sources/
+├── src/
 │   ├── core/
 │   │   ├── Board.cpp
 │   │   ├── Game.cpp
@@ -24,11 +25,11 @@ UTTT_Project/
 │   │
 │   ├── interface/
 │   │   ├── Adapter.cpp
-│
+│   │
 │   └── utils/
 │       ├── Timer.cpp
 │
-├── Headers/
+├── include/
 │   ├── core/
 │   │   ├── Board.h
 │   │   ├── Game.h
@@ -45,7 +46,7 @@ UTTT_Project/
 │   └── utils/
 │       ├── Timer.h
 │
-└── docs/
+├── docs/
     ├── architecture.md
 ```
 
