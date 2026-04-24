@@ -5,7 +5,6 @@
 		<Option title="UTTT_Template" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Sources/core/;Sources/ai/;Sources/utils/;Sources/interface/;Headers/interface/;Headers/ai/;Headers/core/;Headers/utils/" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/UTTT_Template" prefix_auto="1" extension_auto="1" />
