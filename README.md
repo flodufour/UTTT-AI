@@ -48,3 +48,12 @@ UTTT_Project/
 └── docs/
     ├── architecture.md
 ```
+
+
+## Dependency (install from official allegro site)
+
+- allegro-5.2.dll  
+- allegro_font-5.2.dll  
+- allegro_ttf-5.2.dll  
+- allegro_image-5.2.dll  
+- allegro_primitives-5.2.dll
