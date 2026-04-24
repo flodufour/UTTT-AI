@@ -1,3 +1,5 @@
+```mermaid
+
 flowchart TD
 
 A[main.cpp] --> B[Adapter]
@@ -48,3 +50,4 @@ end
 subgraph UTILS
 L
 end
+```
