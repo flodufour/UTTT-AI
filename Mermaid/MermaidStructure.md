@@ -1,6 +1,3 @@
-## Architecture
-
-```mermaid
 flowchart TD
 
 A[main.cpp] --> B[Adapter]
@@ -11,28 +8,37 @@ A --> D[AI]
 
 D --> E[Minimax]
 D --> F[Heuristic]
+D --> K[MoveGenerator]
 
-E --> G[Board]
+E --> G[UltimateBoard]
 F --> G
+K --> G
+
+G --> I[SubBoard]
+I --> H[Cell]
 
 G --> H[Move]
+I --> H
 
 B --> G
+B --> H
 
-G --> I[Rules / Game Logic]
+G --> J[Game Logic / Rules]
 
-D --> J[Timer]
+D --> L[Timer]
 
 subgraph CORE
 G
-H
 I
+H
+J
 end
 
 subgraph AI
 D
 E
 F
+K
 end
 
 subgraph INTERFACE
@@ -40,6 +46,5 @@ B
 end
 
 subgraph UTILS
-J
+L
 end
-```
