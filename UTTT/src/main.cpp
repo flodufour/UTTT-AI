@@ -1,25 +1,31 @@
 #include <iostream>
 #include "main.h"
+#include "core/GameState.h"
 
 int main()
 {
-    // Game initialization
     game.initialize(10, Level::EASY_1, Mode::DEBUG, false, "Pseudo");
+
+    GameState state;
 
     while (!game.isAllGameFinish())
     {
-        GameMove myMove{0, 0};
-
         while (!game.isFinish())
         {
-            // Get IA move
-            GameMove gameMove;
-            game.getMove(gameMove);
-            std::cerr << "IA move " << gameMove.row << " " << gameMove.col << std::endl;
+            GameMove opponentMove;
+            game.getMove(opponentMove);
 
-            // Send your move
+            std::cerr << "IA move " << opponentMove.row << " " << opponentMove.col << std::endl;
+
+            state.applyOpponentMove(opponentMove);
+
+            GameMove myMove = {0, 2};
+
             std::cerr << "Send move " << myMove.row << " " << myMove.col << std::endl;
+
             game.setMove(myMove);
+
+            state.applyMyMove(myMove);
         }
     }
 
