@@ -1,42 +1,50 @@
-```mermaid
 classDiagram
 
 class Game {
-    -board: Board
+    -board: UltimateBoard
     -currentPlayer: int
     +playTurn()
     +isGameOver(): bool
 }
 
-class Board {
-    -grid[9][9]: int
-    -macroGrid[9]: int
+class UltimateBoard {
+    -subBoards[9]: SubBoard
     +applyMove(move: Move)
     +getValidMoves(): list~Move~
     +checkWin(): int
 }
 
+class SubBoard {
+    -cells[9]: Cell
+    +applyMove(move: Move)
+    +getValidMoves(): list~Move~
+    +checkWin(): int
+}
+
+class Cell {
+    -value: int
+}
+
 class Move {
-    +boardIndex: int
+    +subBoardIndex: int
     +cellIndex: int
 }
 
 class AI {
     -depth: int
-    +getBestMove(board: Board): Move
+    +getBestMove(board: UltimateBoard): Move
 }
 
 class Minimax {
-    +search(board: Board, depth: int, alpha: int, beta: int): int
+    +search(board: UltimateBoard, depth: int, alpha: int, beta: int): int
 }
 
 class Heuristic {
-    +evaluate(board: Board): int
+    +evaluate(board: UltimateBoard): int
 }
 
-class Adapter {
-    +readState(): Board
-    +sendMove(move: Move)
+class MoveGenerator {
+    +getValidMoves(board: UltimateBoard): list~Move~
 }
 
 class Timer {
@@ -45,18 +53,29 @@ class Timer {
     +getMs(): int
 }
 
+class Adapter {
+    +readState(): UltimateBoard
+    +sendMove(move: Move)
+}
+
 %% --- Core ---
-Game "1" *-- "1" Board
+Game "1" *-- "1" UltimateBoard
+UltimateBoard "1" *-- "9" SubBoard
+SubBoard "1" *-- "9" Cell
+
 Game ..> Move
 
 %% --- AI ---
 AI ..> Minimax
-Minimax ..> Heuristic
-AI ..> Board
+AI ..> MoveGenerator
+AI ..> Heuristic
 AI ..> Timer
+AI ..> UltimateBoard
+
+Minimax ..> Heuristic
+Minimax ..> MoveGenerator
 
 %% --- Interface ---
-Adapter ..> Board
-Adapter ..> Move
 Adapter ..> Game
-```
+Adapter ..> UltimateBoard
+Adapter ..> Move
