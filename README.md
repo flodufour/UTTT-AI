@@ -14,7 +14,9 @@ UTTT_Project/
 │
 ├── src/
 │   ├── core/
-│   │   ├── Board.cpp
+│   │   ├── Cell.cpp
+│   │   ├── SubBoard.cpp
+│   │   ├── UltimateBoard.cpp
 │   │   ├── Game.cpp
 │   │   ├── Move.cpp
 │   │
@@ -22,6 +24,7 @@ UTTT_Project/
 │   │   ├── AI.cpp
 │   │   ├── Minimax.cpp
 │   │   ├── Heuristic.cpp
+│   │   ├── MoveGenerator.cpp
 │   │
 │   ├── interface/
 │   │   ├── Adapter.cpp
@@ -31,7 +34,9 @@ UTTT_Project/
 │
 ├── include/
 │   ├── core/
-│   │   ├── Board.h
+│   │   ├── Cell.h
+│   │   ├── SubBoard.h
+│   │   ├── UltimateBoard.h
 │   │   ├── Game.h
 │   │   ├── Move.h
 │   │
@@ -39,6 +44,7 @@ UTTT_Project/
 │   │   ├── AI.h
 │   │   ├── Minimax.h
 │   │   ├── Heuristic.h
+│   │   ├── MoveGenerator.h
 │   │
 │   ├── interface/
 │   │   ├── Adapter.h
@@ -47,7 +53,12 @@ UTTT_Project/
 │       ├── Timer.h
 │
 ├── docs/
-    ├── architecture.md
+│   ├── architecture.md
+│   ├── rules.md
+│
+└── tests/
+    ├── test_board.cpp
+    ├── test_ai.cpp
 ```
 
 
