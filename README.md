@@ -2,7 +2,7 @@
 
 ## SKELETON
 
-<prev>
+```
 UTTT_Project/
 │
 ├── UTTT_Template.cbp   
@@ -23,7 +23,7 @@ UTTT_Project/
 │   │   ├── Heuristic.cpp
 │   │
 │   ├── interface/
-│   │   ├── Adapter.cpp   ← lien avec la lib
+│   │   ├── Adapter.cpp
 │
 │   └── utils/
 │       ├── Timer.cpp
@@ -47,5 +47,4 @@ UTTT_Project/
 │
 └── docs/
     ├── architecture.md
-
-</prev>
+```
