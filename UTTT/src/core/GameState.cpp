@@ -40,3 +40,28 @@ const UltimateBoard& GameState::getBoard() const
 {
     return board;
 }
+
+std::vector<GameMove> GameState::getValidMoves() const
+{
+    std::vector<GameMove> moves;
+
+    const UltimateBoard& b = board;
+
+    int active = b.getActiveBoard();
+
+    for (int boardIndex = 0; boardIndex < 9; boardIndex++)
+    {
+        if (active != -1 && boardIndex != active)
+            continue;
+
+        for (int cellIndex = 0; cellIndex < 9; cellIndex++)
+        {
+            GameMove m(boardIndex, cellIndex);
+
+            if (b.isValidMove(m))
+                moves.push_back(m);
+        }
+    }
+
+    return moves;
+}

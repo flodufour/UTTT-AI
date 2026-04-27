@@ -3,6 +3,7 @@
 #define MAIN_H_INCLUDED
 
 #include <string>
+#include "core/GameMove.h"
 
 enum class Level {
     EASY_1,

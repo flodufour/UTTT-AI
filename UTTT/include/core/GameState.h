@@ -2,6 +2,7 @@
 
 #include "core/UltimateBoard.h"
 #include "main.h"
+#include <vector>
 
 class GameState
 {
@@ -27,4 +28,6 @@ public:
     CellState getCurrentPlayer() const;
 
     const UltimateBoard& getBoard() const;
+
+    std::vector<GameMove> getValidMoves() const;
 };
