@@ -1,30 +1,40 @@
 #include <iostream>
 #include "main.h"
 #include "manager/GameManager.h"
+#include "utils/MoveConverter.h"
 
 int main()
 {
+
     game.initialize(10, Level::EASY_1, Mode::DEBUG, false, "Pseudo");
 
+    MoveConverter converter;
+
     GameManager manager;
-    manager.init(CellState::O);
+
 
     while (!game.isAllGameFinish())
     {
+        manager.init(CellState::O);
         while (!game.isFinish())
         {
             GameMove opponentMove;
             game.getMove(opponentMove);
-            std::cerr << "IA move " << opponentMove.boardIndex << " " << opponentMove.cellIndex << std::endl;
-            manager.applyMove(opponentMove);
+            AIMove opponentAIMove = converter.toAIMove(opponentMove);
 
-            GameMove myMove = manager.chooseMove();
+            std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+            manager.applyMove(opponentAIMove);
+
+            AIMove myMove = manager.chooseMove();
             std::cerr << "Send move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;
-            game.setMove(myMove);
             manager.applyMove(myMove);
+            GameMove engineMove = converter.toGameMove(myMove);
+            game.setMove(engineMove);
 
         }
     }
 
     return 0;
 }
+
+

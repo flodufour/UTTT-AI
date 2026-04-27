@@ -23,11 +23,11 @@ public:
 
     void reset();
 
-    void applyMove(const GameMove& move);
+    void applyMove(const AIMove& move);
 
     CellState getCurrentPlayer() const;
 
     const UltimateBoard& getBoard() const;
 
-    std::vector<GameMove> getValidMoves() const;
+    std::vector<AIMove> getValidMoves() const;
 };

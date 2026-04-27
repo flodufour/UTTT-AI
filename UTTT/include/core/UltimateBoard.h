@@ -1,7 +1,7 @@
 #pragma once
 
 #include "subBoard.h"
-#include "GameMove.h"
+#include "AIMove.h"
 #include <array>
 
 class UltimateBoard {
@@ -13,9 +13,9 @@ private:
 public:
     UltimateBoard();
 
-    bool playMove(GameMove gameMove, CellState player);
+    bool playMove(AIMove aIMove, CellState player);
 
-    bool isValidMove(GameMove gameMove) const;
+    bool isValidMove(AIMove aIMove) const;
 
     CellState checkWinner() const;
 

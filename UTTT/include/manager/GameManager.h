@@ -15,9 +15,9 @@ public:
 
     void init(CellState mySide);
 
-    void applyMove(const GameMove& move);
+    void applyMove(const AIMove& move);
 
-    GameMove chooseMove();
+    AIMove chooseMove();
 
     const GameState& getState() const;
 };

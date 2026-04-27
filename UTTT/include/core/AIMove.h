@@ -1,13 +1,13 @@
 #pragma once
 
-struct GameMove
+struct AIMove
 {
     int boardIndex;
     int cellIndex;
 
-    GameMove() : boardIndex(-1), cellIndex(-1) {}
+    AIMove() : boardIndex(-1), cellIndex(-1) {}
 
-    GameMove(int b, int c) : boardIndex(b), cellIndex(c) {}
+    AIMove(int b, int c) : boardIndex(b), cellIndex(c) {}
 
     bool isValid() const
     {

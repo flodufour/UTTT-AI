@@ -1,4 +1,5 @@
 #include "manager/GameManager.h"
+#include <iostream>
 
 GameManager::GameManager()
 {
@@ -13,16 +14,20 @@ void GameManager::init(CellState mySide)
     state.setPlayers(mySide);
 }
 
-void GameManager::applyMove(const GameMove& move)
+void GameManager::applyMove(const AIMove& move)
 {
     state.applyMove(move);
     state.switchPlayers();
 }
 
-GameMove GameManager::chooseMove()
+AIMove GameManager::chooseMove()
 {
     //#TODO
     auto moves = state.getValidMoves();
+
+    for (auto move : moves){
+        std::cout << move.boardIndex << " " << move.cellIndex << std::endl;
+    }
 
     if (!moves.empty())
         return moves[0];

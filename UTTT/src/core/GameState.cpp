@@ -19,9 +19,9 @@ void GameState::setPlayers(CellState me)
     currentPlayer = CellState::X;
 }
 
-void GameState::applyMove(const GameMove& gameMove)
+void GameState::applyMove(const AIMove& aIMove)
 {
-    board.playMove(gameMove, currentPlayer);
+    board.playMove(aIMove, currentPlayer);
 }
 
 void GameState::switchPlayers()
@@ -41,9 +41,9 @@ const UltimateBoard& GameState::getBoard() const
     return board;
 }
 
-std::vector<GameMove> GameState::getValidMoves() const
+std::vector<AIMove> GameState::getValidMoves() const
 {
-    std::vector<GameMove> moves;
+    std::vector<AIMove> moves;
 
     const UltimateBoard& b = board;
 
@@ -56,7 +56,7 @@ std::vector<GameMove> GameState::getValidMoves() const
 
         for (int cellIndex = 0; cellIndex < 9; cellIndex++)
         {
-            GameMove m(boardIndex, cellIndex);
+            AIMove m(boardIndex, cellIndex);
 
             if (b.isValidMove(m))
                 moves.push_back(m);

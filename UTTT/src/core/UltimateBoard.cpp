@@ -11,9 +11,9 @@ void UltimateBoard::reset() {
     activeBoard = -1;
 }
 
-bool UltimateBoard::isValidMove(GameMove gameMove) const {
-    int boardIndex = gameMove.boardIndex;
-    int cellIndex = gameMove.cellIndex;
+bool UltimateBoard::isValidMove(AIMove aIMove) const {
+    int boardIndex = aIMove.boardIndex;
+    int cellIndex = aIMove.cellIndex;
     if (boardIndex < 0 || boardIndex >= 9) return false;
     if (cellIndex < 0 || cellIndex >= 9) return false;
 
@@ -29,10 +29,10 @@ bool UltimateBoard::isValidMove(GameMove gameMove) const {
     return true;
 }
 
-bool UltimateBoard::playMove(GameMove gameMove, CellState player) {
-    int boardIndex = gameMove.boardIndex;
-    int cellIndex = gameMove.cellIndex;
-    if (!isValidMove(gameMove))
+bool UltimateBoard::playMove(AIMove aIMove, CellState player) {
+    int boardIndex = aIMove.boardIndex;
+    int cellIndex = aIMove.cellIndex;
+    if (!isValidMove(aIMove))
         return false;
 
     boards[boardIndex].playMove(cellIndex, player);
