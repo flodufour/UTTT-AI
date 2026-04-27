@@ -27,11 +27,6 @@ enum Winner {
     IA_AND_PLAYER,
 };
 
-struct GameMove {
-    int row;
-    int col;
-};
-
 struct IGame {
     virtual ~IGame() = default;
     virtual Winner getWinner() const = 0;

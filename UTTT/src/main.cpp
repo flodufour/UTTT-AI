@@ -17,11 +17,13 @@ int main()
             game.getMove(opponentMove);
             state.applyMove(opponentMove);
             std::cerr << "IA move " << opponentMove.row << " " << opponentMove.col << std::endl;
+            state.switchPlayers();
 
             GameMove myMove = {0, 2};
             game.setMove(myMove);
-            state.applyMyMove(myMove);
+            state.applyMove(myMove);
             std::cerr << "Send move " << myMove.row << " " << myMove.col << std::endl;
+            state.switchPlayers();
 
         }
     }

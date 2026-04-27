@@ -1,6 +1,7 @@
 #pragma once
 
 #include "subBoard.h"
+#include "GameMove.h"
 #include <array>
 
 class UltimateBoard {
@@ -12,18 +13,17 @@ private:
 public:
     UltimateBoard();
 
-    bool playMove(int boardIndex, int cellIndex, CellState player);
+    bool playMove(GameMove gameMove, CellState player);
 
-    bool isValidMove(int boardIndex, int cellIndex) const;
+    bool isValidMove(GameMove gameMove) const;
 
     CellState checkWinner() const;
 
     bool isFull() const;
 
-    int getActiveBoard() const;
-
     void updateActiveBoard(int lastCellIndex);
 
+    int getActiveBoard() const;
     SubBoard& getBoard(int index);
     const SubBoard& getBoard(int index) const;
 

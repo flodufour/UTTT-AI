@@ -19,9 +19,9 @@ void GameState::setPlayers(CellState me)
     currentPlayer = CellState::X;
 }
 
-void GameState::applyMove(const GameMove& move)
+void GameState::applyMove(const GameMove& gameMove)
 {
-    board.playMove(move.row, move.col, currentPlayer);
+    board.playMove(gameMove, currentPlayer);
 }
 
 void GameState::switchPlayers()
