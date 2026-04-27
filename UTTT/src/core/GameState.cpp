@@ -11,14 +11,29 @@ void GameState::reset()
     board.reset();
 }
 
-void GameState::applyOpponentMove(const GameMove& move)
+void GameState::setPlayers(CellState me)
 {
-    board.playMove(move.row, move.col, opponent);
+    myPlayer = me;
+    opponent = (me == CellState::X) ? CellState::O : CellState::X;
+
+    currentPlayer = CellState::X;
 }
 
-void GameState::applyMyMove(const GameMove& move)
+void GameState::applyMove(const GameMove& move)
 {
-    board.playMove(move.row, move.col, myPlayer);
+    board.playMove(move.row, move.col, currentPlayer);
+}
+
+void GameState::switchPlayers()
+{
+    currentPlayer = (currentPlayer == CellState::X)
+                    ? CellState::O
+                    : CellState::X;
+}
+
+CellState GameState::getCurrentPlayer() const
+{
+    return currentPlayer;
 }
 
 const UltimateBoard& GameState::getBoard() const

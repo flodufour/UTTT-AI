@@ -6,19 +6,25 @@
 class GameState
 {
 private:
+
     UltimateBoard board;
 
-    CellState myPlayer = CellState::X;
-    CellState opponent = CellState::O;
+    CellState myPlayer;
+    CellState opponent;
+    CellState currentPlayer;
 
 public:
     GameState();
 
+    void setPlayers(CellState me);
+
+    void switchPlayers();
+
     void reset();
 
-    void applyOpponentMove(const GameMove& move);
+    void applyMove(const GameMove& move);
 
-    void applyMyMove(const GameMove& move);
+    CellState getCurrentPlayer() const;
 
     const UltimateBoard& getBoard() const;
 };
