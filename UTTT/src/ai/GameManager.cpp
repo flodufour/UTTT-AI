@@ -1,8 +1,10 @@
-#include "manager/GameManager.h"
+#include "ai/GameManager.h"
+#include "ai/strategy/RandomStrategy.h"
 #include <iostream>
 
 GameManager::GameManager()
 {
+    strategy = new RandomStrategy();
 }
 
 void GameManager::init(CellState mySide)
@@ -22,17 +24,7 @@ void GameManager::applyMove(const AIMove& move)
 
 AIMove GameManager::chooseMove()
 {
-    //#TODO
-    auto moves = state.getValidMoves();
-
-    for (auto move : moves){
-        std::cout << move.boardIndex << " " << move.cellIndex << std::endl;
-    }
-
-    if (!moves.empty())
-        return moves[0];
-
-    return {-1, -1};
+    return strategy->chooseMove(state);
 }
 
 const GameState& GameManager::getState() const

@@ -2,6 +2,7 @@
 
 #include "core/GameState.h"
 #include "main.h"
+#include "ai/strategy/IStrategy.h"
 
 class GameManager
 {
@@ -9,6 +10,7 @@ private:
     GameState state;
     CellState me;
     CellState opponent;
+    IStrategy* strategy;
 
 public:
     GameManager();

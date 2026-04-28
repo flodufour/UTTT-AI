@@ -65,3 +65,11 @@ std::vector<AIMove> GameState::getValidMoves() const
 
     return moves;
 }
+
+
+bool GameState::isTerminal() const
+{
+    return board.hasWinner() != CellState::EMPTY
+        || board.isFull();
+}
+

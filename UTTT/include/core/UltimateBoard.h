@@ -28,4 +28,6 @@ public:
     const SubBoard& getBoard(int index) const;
 
     void reset();
+
+    CellState hasWinner() const;
 };

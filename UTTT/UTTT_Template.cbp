@@ -37,20 +37,25 @@
 			<Add option="allegro-5.2.dll" />
 			<Add library="./libUTTTLib.a" />
 		</Linker>
+		<Unit filename="include/ai/GameManager.h" />
+		<Unit filename="include/ai/evaluate/Evaluation.h" />
+		<Unit filename="include/ai/strategy/IStrategy.h" />
+		<Unit filename="include/ai/strategy/RandomStrategy.h" />
 		<Unit filename="include/core/AIMove.h" />
 		<Unit filename="include/core/Cell.h" />
 		<Unit filename="include/core/GameState.h" />
 		<Unit filename="include/core/SubBoard.h" />
 		<Unit filename="include/core/UltimateBoard.h" />
 		<Unit filename="include/main.h" />
-		<Unit filename="include/manager/GameManager.h" />
 		<Unit filename="include/utils/MoveConverter.h" />
+		<Unit filename="src/ai/GameManager.cpp" />
+		<Unit filename="src/ai/evaluate/Evaluation.cpp" />
+		<Unit filename="src/ai/strategy/RandomStrategy.cpp" />
 		<Unit filename="src/core/Cell.cpp" />
 		<Unit filename="src/core/GameState.cpp" />
 		<Unit filename="src/core/SubBoard.cpp" />
 		<Unit filename="src/core/UltimateBoard.cpp" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/manager/GameManager.cpp" />
 		<Unit filename="src/utils/MoveConverter.cpp" />
 		<Extensions />
 	</Project>

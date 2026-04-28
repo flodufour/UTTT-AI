@@ -30,4 +30,11 @@ public:
     const UltimateBoard& getBoard() const;
 
     std::vector<AIMove> getValidMoves() const;
+
+    bool isTerminal() const;
+
+    CellState getMyPlayer() const { return myPlayer; }
+
+    CellState getOpponent() const { return opponent; }
+
 };

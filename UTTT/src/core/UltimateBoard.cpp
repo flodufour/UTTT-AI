@@ -96,3 +96,24 @@ SubBoard& UltimateBoard::getBoard(int index) {
 const SubBoard& UltimateBoard::getBoard(int index) const {
     return boards[index];
 }
+
+CellState UltimateBoard::hasWinner() const
+{
+    const int win[8][3] = {
+        {0,1,2},{3,4,5},{6,7,8},
+        {0,3,6},{1,4,7},{2,5,8},
+        {0,4,8},{2,4,6}
+    };
+
+    for (const auto& line : win)
+    {
+        CellState a = boards[line[0]].checkWinner();
+        CellState b = boards[line[1]].checkWinner();
+        CellState c = boards[line[2]].checkWinner();
+
+        if (a != CellState::EMPTY && a == b && b == c)
+            return a;
+    }
+
+    return CellState::EMPTY;
+}

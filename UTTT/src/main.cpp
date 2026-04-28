@@ -1,12 +1,12 @@
 #include <iostream>
 #include "main.h"
-#include "manager/GameManager.h"
+#include "ai/GameManager.h"
 #include "utils/MoveConverter.h"
 
 int main()
 {
 
-    game.initialize(10, Level::EASY_1, Mode::DEBUG, false, "Pseudo");
+    game.initialize(10, Level::EASY_2, Mode::DEBUG, false, "Pseudo");
 
     MoveConverter converter;
 
