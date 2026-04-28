@@ -1,10 +1,11 @@
 #include "ai/GameManager.h"
 #include "ai/strategy/RandomStrategy.h"
+#include "ai/strategy/SimpleStrategy.h"
 #include <iostream>
 
 GameManager::GameManager()
 {
-    _strategy = new RandomStrategy();
+    _strategy = new SimpleStrategy();
 }
 
 void GameManager::init(CellState mySide)

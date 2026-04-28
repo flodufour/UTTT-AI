@@ -41,6 +41,7 @@
 		<Unit filename="include/ai/evaluate/Evaluation.h" />
 		<Unit filename="include/ai/strategy/IStrategy.h" />
 		<Unit filename="include/ai/strategy/RandomStrategy.h" />
+		<Unit filename="include/ai/strategy/SimpleStrategy.h" />
 		<Unit filename="include/core/AIMove.h" />
 		<Unit filename="include/core/Cell.h" />
 		<Unit filename="include/core/GameState.h" />
@@ -51,6 +52,7 @@
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/Evaluation.cpp" />
 		<Unit filename="src/ai/strategy/RandomStrategy.cpp" />
+		<Unit filename="src/ai/strategy/SimpleStrategy.cpp" />
 		<Unit filename="src/core/Cell.cpp" />
 		<Unit filename="src/core/GameState.cpp" />
 		<Unit filename="src/core/SubBoard.cpp" />
