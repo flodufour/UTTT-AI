@@ -8,11 +8,11 @@ class GameState
 {
 private:
 
-    UltimateBoard board;
+    UltimateBoard _board;
 
-    CellState myPlayer;
-    CellState opponent;
-    CellState currentPlayer;
+    CellState _myPlayer;
+    CellState _opponent;
+    CellState _currentPlayer;
 
 public:
     GameState();
@@ -33,8 +33,10 @@ public:
 
     bool isTerminal() const;
 
-    CellState getMyPlayer() const { return myPlayer; }
+    CellState getMyPlayer() const { return _myPlayer; }
 
-    CellState getOpponent() const { return opponent; }
+    CellState getOpponent() const { return _opponent; }
+
+    CellState getWinner() const;
 
 };

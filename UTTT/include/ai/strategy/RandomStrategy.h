@@ -7,8 +7,8 @@ public:
     AIMove chooseMove(const GameState& state) override;
 
 private:
-    bool isWinningMove(const GameState& state, const AIMove& move);
-    bool isBlockingMove(const GameState& state, const AIMove& move);
+    bool _isWinningMove(const GameState& state, const AIMove& move);
+    bool _isBlockingMove(const GameState& state, const AIMove& move);
 
-    Evaluation eval;
+    Evaluation _eval;
 };

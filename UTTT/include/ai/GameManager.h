@@ -7,10 +7,10 @@
 class GameManager
 {
 private:
-    GameState state;
-    CellState me;
-    CellState opponent;
-    IStrategy* strategy;
+    GameState _state;
+    CellState _me;
+    CellState _opponent;
+    IStrategy* _strategy;
 
 public:
     GameManager();

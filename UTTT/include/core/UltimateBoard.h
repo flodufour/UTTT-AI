@@ -6,9 +6,9 @@
 
 class UltimateBoard {
 private:
-    std::array<SubBoard, 9> boards;
+    std::array<SubBoard, 9> _boards;
 
-    int activeBoard;
+    int _activeBoard;
 
 public:
     UltimateBoard();
@@ -28,6 +28,4 @@ public:
     const SubBoard& getBoard(int index) const;
 
     void reset();
-
-    CellState hasWinner() const;
 };

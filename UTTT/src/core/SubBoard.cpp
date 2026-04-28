@@ -8,26 +8,26 @@ bool SubBoard::playMove(int index, CellState player) {
     if (index < 0 || index >= 9)
         return false;
 
-    if (!cells[index].isEmpty())
+    if (!_cells[index].isEmpty())
         return false;
 
     if (checkWinner() != CellState::EMPTY)
         return false; // board déjà gagné
 
-    cells[index].setState(player);
+    _cells[index].setState(player);
     return true;
 }
 
 Cell& SubBoard::getCell(int index) {
-    return cells[index];
+    return _cells[index];
 }
 
 const Cell& SubBoard::getCell(int index) const {
-    return cells[index];
+    return _cells[index];
 }
 
 bool SubBoard::isFull() const {
-    for (const auto& cell : cells) {
+    for (const auto& cell : _cells) {
         if (cell.isEmpty())
             return false;
     }
@@ -42,9 +42,9 @@ CellState SubBoard::checkWinner() const {
     };
 
     for (const auto& line : win) {
-        CellState a = cells[line[0]].getState();
-        CellState b = cells[line[1]].getState();
-        CellState c = cells[line[2]].getState();
+        CellState a = _cells[line[0]].getState();
+        CellState b = _cells[line[1]].getState();
+        CellState c = _cells[line[2]].getState();
 
         if (a != CellState::EMPTY && a == b && b == c)
             return a;
@@ -58,7 +58,7 @@ bool SubBoard::isPlayable() const {
 }
 
 void SubBoard::reset() {
-    for (auto& cell : cells) {
+    for (auto& cell : _cells) {
         cell.setState(CellState::EMPTY);
     }
 }

@@ -4,30 +4,30 @@
 
 GameManager::GameManager()
 {
-    strategy = new RandomStrategy();
+    _strategy = new RandomStrategy();
 }
 
 void GameManager::init(CellState mySide)
 {
-    me = mySide;
-    opponent = (mySide == CellState::X) ? CellState::O : CellState::X;
+    _me = mySide;
+    _opponent = (mySide == CellState::X) ? CellState::O : CellState::X;
 
-    state.reset();
-    state.setPlayers(mySide);
+    _state.reset();
+    _state.setPlayers(mySide);
 }
 
 void GameManager::applyMove(const AIMove& move)
 {
-    state.applyMove(move);
-    state.switchPlayers();
+    _state.applyMove(move);
+    _state.switchPlayers();
 }
 
 AIMove GameManager::chooseMove()
 {
-    return strategy->chooseMove(state);
+    return _strategy->chooseMove(_state);
 }
 
 const GameState& GameManager::getState() const
 {
-    return state;
+    return _state;
 }

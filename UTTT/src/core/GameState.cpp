@@ -8,44 +8,44 @@ GameState::GameState()
 
 void GameState::reset()
 {
-    board.reset();
+    _board.reset();
 }
 
 void GameState::setPlayers(CellState me)
 {
-    myPlayer = me;
-    opponent = (me == CellState::X) ? CellState::O : CellState::X;
+    _myPlayer = me;
+    _opponent = (me == CellState::X) ? CellState::O : CellState::X;
 
-    currentPlayer = CellState::X;
+    _currentPlayer = CellState::X;
 }
 
 void GameState::applyMove(const AIMove& aIMove)
 {
-    board.playMove(aIMove, currentPlayer);
+    _board.playMove(aIMove, _currentPlayer);
 }
 
 void GameState::switchPlayers()
 {
-    currentPlayer = (currentPlayer == CellState::X)
+    _currentPlayer = (_currentPlayer == CellState::X)
                     ? CellState::O
                     : CellState::X;
 }
 
 CellState GameState::getCurrentPlayer() const
 {
-    return currentPlayer;
+    return _currentPlayer;
 }
 
 const UltimateBoard& GameState::getBoard() const
 {
-    return board;
+    return _board;
 }
 
 std::vector<AIMove> GameState::getValidMoves() const
 {
     std::vector<AIMove> moves;
 
-    const UltimateBoard& b = board;
+    const UltimateBoard& b = _board;
 
     int active = b.getActiveBoard();
 
@@ -69,7 +69,12 @@ std::vector<AIMove> GameState::getValidMoves() const
 
 bool GameState::isTerminal() const
 {
-    return board.hasWinner() != CellState::EMPTY
-        || board.isFull();
+    return _board.checkWinner() != CellState::EMPTY
+        || _board.isFull();
+}
+
+CellState GameState::getWinner() const
+{
+    return _board.checkWinner();
 }
 

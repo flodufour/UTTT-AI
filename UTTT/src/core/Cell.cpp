@@ -1,15 +1,15 @@
 #include "core/Cell.h"
 
-Cell::Cell() : state(CellState::EMPTY) {}
+Cell::Cell() : _state(CellState::EMPTY) {}
 
 CellState Cell::getState() const {
-    return state;
+    return _state;
 }
 
 void Cell::setState(CellState newState) {
-    state = newState;
+    _state = newState;
 }
 
 bool Cell::isEmpty() const {
-    return state == CellState::EMPTY;
+    return _state == CellState::EMPTY;
 }

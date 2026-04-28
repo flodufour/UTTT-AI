@@ -5,7 +5,7 @@
 
 class SubBoard {
 private:
-    std::array<Cell, 9> cells;
+    std::array<Cell, 9> _cells;
 
 public:
     SubBoard();

@@ -8,7 +8,7 @@ enum class CellState {
 
 class Cell {
 private:
-    CellState state;
+    CellState _state;
 
 public:
     Cell();
