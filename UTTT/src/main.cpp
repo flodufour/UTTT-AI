@@ -6,7 +6,7 @@
 int main()
 {
 
-    game.initialize(10, Level::MEDIUM_2, Mode::DEBUG, false, "Pseudo");
+    game.initialize(10, Level::MEDIUM_1, Mode::DEBUG, false, "Pseudo");
 
     MoveConverter converter;
 

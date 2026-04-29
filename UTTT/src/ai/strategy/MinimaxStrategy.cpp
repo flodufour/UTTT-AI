@@ -16,7 +16,7 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
         GameState copy = state;
         copy.applyMove(move);
 
-        int score = minimax(copy, 7, -1000000, 1000000, false);
+        int score = minimax(copy, 5, -1000000, 1000000, false);
 
         if (score > bestScore)
         {
