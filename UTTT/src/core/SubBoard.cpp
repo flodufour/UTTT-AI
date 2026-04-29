@@ -1,4 +1,5 @@
 #include "core/SubBoard.h"
+#include "core/WinPatterns.h"
 
 SubBoard::SubBoard() {
     reset();
@@ -35,13 +36,7 @@ bool SubBoard::isFull() const {
 }
 
 CellState SubBoard::checkWinner() const {
-    const int win[8][3] = {
-        {0,1,2},{3,4,5},{6,7,8},
-        {0,3,6},{1,4,7},{2,5,8},
-        {0,4,8},{2,4,6}
-    };
-
-    for (const auto& line : win) {
+    for (const auto& line : WIN_LINES) {
         CellState a = _cells[line[0]].getState();
         CellState b = _cells[line[1]].getState();
         CellState c = _cells[line[2]].getState();

@@ -1,4 +1,5 @@
 #include "core/UltimateBoard.h"
+#include "core/WinPatterns.h"
 
 UltimateBoard::UltimateBoard() {
     reset();
@@ -59,13 +60,8 @@ void UltimateBoard::updateActiveBoard(int lastCellIndex) {
 }
 
 CellState UltimateBoard::checkWinner() const {
-    const int win[8][3] = {
-        {0,1,2},{3,4,5},{6,7,8},
-        {0,3,6},{1,4,7},{2,5,8},
-        {0,4,8},{2,4,6}
-    };
 
-    for (const auto& line : win) {
+    for (const auto& line : WIN_LINES) {
         CellState a = _boards[line[0]].checkWinner();
         CellState b = _boards[line[1]].checkWinner();
         CellState c = _boards[line[2]].checkWinner();
