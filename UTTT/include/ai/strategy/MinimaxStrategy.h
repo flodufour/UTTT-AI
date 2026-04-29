@@ -7,6 +7,6 @@ public:
     AIMove chooseMove(const GameState& state) override;
 
 private:
-    int minimax(GameState state, int depth, bool maximizing);
+    int minimax(GameState state, int depth, int alpha, int beta, bool maximizing);
     Evaluation _eval;
 };

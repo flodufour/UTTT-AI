@@ -16,7 +16,7 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
         GameState copy = state;
         copy.applyMove(move);
 
-        int score = minimax(copy, 7, -1000000, 1000000, false);
+        int score = minimax(copy, 5, false);
 
         if (score > bestScore)
         {
@@ -28,7 +28,7 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
     return bestMove;
 }
 
-int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bool maximizing)
+int MinimaxStrategy::minimax(GameState state, int depth, bool maximizing)
 {
     if (depth == 0 || state.isTerminal())
         return _eval.evaluate(state);
@@ -47,13 +47,8 @@ int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bo
             GameState copy = state;
             copy.applyMove(move);
 
-            int score = minimax(copy, depth - 1, alpha, beta, false);
-
+            int score = minimax(copy, depth - 1, false);
             best = std::max(best, score);
-            alpha = std::max(alpha, score);
-
-            if (beta <= alpha)
-                break;
         }
 
         return best;
@@ -67,13 +62,8 @@ int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bo
             GameState copy = state;
             copy.applyMove(move);
 
-            int score = minimax(copy, depth - 1, alpha, beta, true);
-
+            int score = minimax(copy, depth - 1, true);
             best = std::min(best, score);
-            beta = std::min(beta, score);
-
-            if (beta <= alpha)
-                break;
         }
 
         return best;
