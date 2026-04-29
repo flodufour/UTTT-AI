@@ -22,6 +22,7 @@ void GameState::setPlayers(CellState me)
 void GameState::applyMove(const AIMove& aIMove)
 {
     _board.playMove(aIMove, _currentPlayer);
+    switchPlayers();
 }
 
 void GameState::switchPlayers()

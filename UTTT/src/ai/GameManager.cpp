@@ -1,11 +1,12 @@
 #include "ai/GameManager.h"
 #include "ai/strategy/RandomStrategy.h"
 #include "ai/strategy/SimpleStrategy.h"
+#include "ai/strategy/MinimaxStrategy.h"
 #include <iostream>
 
 GameManager::GameManager()
 {
-    _strategy = new SimpleStrategy();
+    _strategy = new MinimaxStrategy();
 }
 
 void GameManager::init(CellState mySide)
@@ -20,7 +21,6 @@ void GameManager::init(CellState mySide)
 void GameManager::applyMove(const AIMove& move)
 {
     _state.applyMove(move);
-    _state.switchPlayers();
 }
 
 AIMove GameManager::chooseMove()
