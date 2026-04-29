@@ -21,4 +21,6 @@ public:
     const Cell& getCell(int index) const;
 
     void reset();
+
+    bool isEmpty() const;
 };

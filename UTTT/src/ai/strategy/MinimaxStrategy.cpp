@@ -3,7 +3,12 @@
 
 AIMove MinimaxStrategy::chooseMove(const GameState& state)
 {
+
     auto moves = state.getValidMoves();
+
+    if (state.getBoard().isEmpty()){
+        return {4,4};
+    }
 
     if (moves.empty())
         return {-1, -1};

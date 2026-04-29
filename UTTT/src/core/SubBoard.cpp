@@ -57,3 +57,13 @@ void SubBoard::reset() {
         cell.setState(CellState::EMPTY);
     }
 }
+
+bool SubBoard::isEmpty() const
+{
+    for (int i = 0; i < 9; i++)
+    {
+        if (_cells[i].getState() != CellState::EMPTY)
+            return false;
+    }
+    return true;
+}

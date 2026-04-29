@@ -40,6 +40,7 @@
 		<Unit filename="include/ai/GameManager.h" />
 		<Unit filename="include/ai/evaluate/Evaluation.h" />
 		<Unit filename="include/ai/strategy/IStrategy.h" />
+		<Unit filename="include/ai/strategy/MinimaxStrategy.h" />
 		<Unit filename="include/ai/strategy/RandomStrategy.h" />
 		<Unit filename="include/ai/strategy/SimpleStrategy.h" />
 		<Unit filename="include/core/AIMove.h" />
@@ -52,6 +53,8 @@
 		<Unit filename="include/utils/MoveConverter.h" />
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/Evaluation.cpp" />
+		<Unit filename="src/ai/strategy/MinMaxStrategy.h" />
+		<Unit filename="src/ai/strategy/MinimaxStrategy.cpp" />
 		<Unit filename="src/ai/strategy/RandomStrategy.cpp" />
 		<Unit filename="src/ai/strategy/SimpleStrategy.cpp" />
 		<Unit filename="src/core/Cell.cpp" />

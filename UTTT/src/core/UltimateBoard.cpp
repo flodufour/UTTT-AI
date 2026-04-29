@@ -92,3 +92,13 @@ SubBoard& UltimateBoard::getBoard(int index) {
 const SubBoard& UltimateBoard::getBoard(int index) const {
     return _boards[index];
 }
+
+bool UltimateBoard::isEmpty() const
+{
+    for (int i = 0; i < 9; i++)
+    {
+        if (!getBoard(i).isEmpty())
+            return false;
+    }
+    return true;
+}

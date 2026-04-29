@@ -6,7 +6,7 @@
 int main()
 {
 
-    game.initialize(10, Level::MEDIUM_1, Mode::DEBUG, false, "Pseudo");
+    game.initialize(10, Level::MEDIUM_1, Mode::ARENA, false, "Pseudo");
 
     MoveConverter converter;
 
@@ -15,15 +15,31 @@ int main()
 
     while (!game.isAllGameFinish())
     {
-        manager.init(CellState::O);
+        bool initialized = false;
+
         while (!game.isFinish())
         {
             GameMove opponentMove;
             game.getMove(opponentMove);
             AIMove opponentAIMove = converter.toAIMove(opponentMove);
 
-            std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
-            manager.applyMove(opponentAIMove);
+            if(!initialized){
+                if(opponentAIMove.cellIndex ==-4)
+                {
+                    manager.init(CellState::X);
+                    std::cerr << "HELLOIA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                }
+                else{
+                    manager.init(CellState::O);
+                    std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                    manager.applyMove(opponentAIMove);
+                }
+                initialized = true;
+            }
+            else {
+                std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                manager.applyMove(opponentAIMove);
+            }
 
             AIMove myMove = manager.chooseMove();
             std::cerr << "Send move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;

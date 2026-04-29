@@ -4,65 +4,84 @@
 
 int Evaluation::evaluate(const GameState& state)
 {
-    int score = 0;
-
-    const UltimateBoard& b = state.getBoard();
+    const auto& b = state.getBoard();
 
     CellState me = state.getMyPlayer();
     CellState opp = state.getOpponent();
 
-    int end = checkEndgame(b, me, opp);
-    if (end != 0)
+    if (int end = evaluateTerminal(b, me, opp); end != 0)
         return end;
 
-    int active = b.getActiveBoard();
+    int score = 0;
 
-    if (active != -1)
-    {
-        const SubBoard& target = b.getBoard(active);
-
-        score += evaluateSubBoard(target, me);
-        score -= evaluateSubBoard(target, opp);
-    }
-
-    score += evaluateMetaBoard(b, me);
-
-    score += evaluateAllSubBoards(b, me, opp);
+    score += evaluateMeta(b, me, opp);
+    score += evaluateBoards(b, me, opp);
+    score += evaluateForcedMove(b, me, opp);
 
     return score;
 }
 
-int Evaluation::evaluateAllSubBoards(const UltimateBoard& b, CellState me, CellState opp)
+int Evaluation::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
+{
+    CellState w = b.checkWinner();
+
+    if (w == me) return EvalWeights::WIN;
+    if (w == opp) return -EvalWeights::WIN;
+
+    return 0;
+}
+
+int Evaluation::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp)
+{
+    int score = 0;
+
+    for (const auto& line : WIN_LINES)
+    {
+        int meCount = 0, oppCount = 0;
+
+        for (int i : line)
+        {
+            CellState s = b.getBoard(i).checkWinner();
+            if (s == me) meCount++;
+            else if (s == opp) oppCount++;
+        }
+
+        if (meCount == 3) return EvalWeights::WIN;
+        if (oppCount == 3) return -EvalWeights::WIN;
+
+        if (meCount == 2 && oppCount == 0)
+            score += EvalWeights::META_TWO;
+
+        if (oppCount == 2 && meCount == 0)
+            score -= EvalWeights::META_TWO;
+
+        if (meCount == 1 && oppCount == 0)
+            score += EvalWeights::META_ONE;
+
+        if (oppCount == 1 && meCount == 0)
+            score -= EvalWeights::META_ONE;
+    }
+
+    return score;
+}
+
+int Evaluation::evaluateBoards(const UltimateBoard& b, CellState me, CellState opp)
 {
     int score = 0;
 
     for (int i = 0; i < 9; i++)
     {
-        const SubBoard& sb = b.getBoard(i);
-        CellState sw = sb.checkWinner();
+        const auto& sb = b.getBoard(i);
 
-        if (sw == me)
-            score += 150;
-        else if (sw == opp)
-            score -= 150;
+        CellState w = sb.checkWinner();
+
+        if (w == me) score += EvalWeights::SUB_WIN;
+        else if (w == opp) score -= EvalWeights::SUB_WIN;
         else
-            score += evaluateSubBoard(sb, me) * boardWeight[i];
+            score += evaluateSubBoard(sb, me);
     }
 
     return score;
-}
-
-int Evaluation::checkEndgame(const UltimateBoard& b, CellState me, CellState opp)
-{
-    CellState winner = b.checkWinner();
-
-    if (winner == me)
-        return 100000;
-
-    if (winner == opp)
-        return -100000;
-
-    return 0;
 }
 
 int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
@@ -70,8 +89,8 @@ int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
     int score = 0;
     CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
 
-    if (sb.getCell(4).getState() == me) score += 6;
-    if (sb.getCell(4).getState() == opp) score -= 6;
+    if (sb.getCell(4).getState() == me) score += EvalWeights::CENTER;
+    if (sb.getCell(4).getState() == opp) score -= EvalWeights::CENTER;
 
     int corners[4] = {0,2,6,8};
 
@@ -83,68 +102,50 @@ int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
 
     for (const auto& line : WIN_LINES)
     {
-        int meCount = 0, oppCount = 0, emptyCount = 0;
+        int meCount = 0, oppCount = 0, empty = 0;
 
         for (int i : line)
         {
-            CellState s = sb.getCell(i).getState();
+            auto s = sb.getCell(i).getState();
 
             if (s == me) meCount++;
             else if (s == opp) oppCount++;
-            else emptyCount++;
+            else empty++;
         }
 
-        if (meCount == 2 && emptyCount == 1)
-            score += 25;
+        if (meCount == 2 && empty == 1)
+            score += EvalWeights::SUB_TWO;
 
-        if (oppCount == 2 && emptyCount == 1)
-            score -= 30;
+        if (oppCount == 2 && empty == 1)
+            score -= EvalWeights::SUB_TWO;
     }
 
     return score;
 }
 
-int Evaluation::evaluateMetaBoard(const UltimateBoard& b, CellState me)
+int Evaluation::evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp)
 {
+    int active = b.getActiveBoard();
+
+    if (active == -1)
+        return 0;
+
+    const SubBoard& sb = b.getBoard(active);
+
+    if (!sb.isPlayable())
+        return EvalWeights::FORCED_GOOD;
+
+    int oppPotential = evaluateSubBoard(sb, opp);
+    int myPotential  = evaluateSubBoard(sb, me);
+
     int score = 0;
 
-    CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
+    score -= oppPotential * 10;
 
-    for (const auto& line : WIN_LINES)
-    {
-        int meCount = 0;
-        int oppCount = 0;
+    score += myPotential * 3;
 
-        for (int i : line)
-        {
-            CellState s = b.getBoard(i).checkWinner();
-
-            if (s == me) meCount++;
-            else if (s == opp) oppCount++;
-        }
-
-        if (meCount == 3)
-            return 100000;
-
-        if (oppCount == 3)
-            return -100000;
-
-        if (meCount == 2)
-            score += 1500;
-
-        if (oppCount == 2)
-            score -= 1800;
-
-        if (meCount == 1 && oppCount == 0)
-            score += 150;
-
-        if (oppCount == 1 && meCount == 0)
-            score -= 150;
-    }
-
-    const SubBoard& center = b.getBoard(4);
-    if (center.checkWinner() == me)
-        score += 50;
+    if (oppPotential >= EvalWeights::SUB_TWO)
+        score -= EvalWeights::FORCED_BAD;
 
     return score;
 }
