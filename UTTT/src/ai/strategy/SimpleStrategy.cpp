@@ -14,7 +14,6 @@ AIMove SimpleStrategy::chooseMove(const GameState& state)
     {
         GameState copy = state;
         copy.applyMove(move);
-        copy.switchPlayers();
 
         int score = eval.evaluate(copy);
 

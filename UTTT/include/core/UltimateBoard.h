@@ -3,12 +3,22 @@
 #include "subBoard.h"
 #include "AIMove.h"
 #include <array>
+#include <stack>
+
+
+struct UltimateMove
+{
+    AIMove move;
+    int previousActiveBoard;
+};
 
 class UltimateBoard {
 private:
     std::array<SubBoard, 9> _boards;
 
     int _activeBoard;
+
+    std::stack<UltimateMove> _history;
 
 public:
     UltimateBoard();
@@ -30,4 +40,6 @@ public:
     void reset();
 
     bool isEmpty() const;
+
+    void undoMove();
 };

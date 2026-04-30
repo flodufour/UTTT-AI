@@ -2,10 +2,18 @@
 
 #include "core/Cell.h"
 #include <array>
+#include <stack>
+
+struct SubMove
+{
+    int index;
+    CellState previousState;
+};
 
 class SubBoard {
 private:
     std::array<Cell, 9> _cells;
+    std::stack<SubMove> _history;
 
 public:
     SubBoard();
@@ -17,10 +25,11 @@ public:
     bool isFull() const;
     bool isPlayable() const;
 
-    Cell& getCell(int index);
     const Cell& getCell(int index) const;
 
     void reset();
 
     bool isEmpty() const;
+
+    void undoMove();
 };

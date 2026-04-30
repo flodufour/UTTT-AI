@@ -1,6 +1,7 @@
 #include "ai/evaluate/Evaluation.h"
 #include "core/WinPatterns.h"
 #include "core/SubBoard.h"
+#include <algorithm>
 
 int Evaluation::evaluate(const GameState& state)
 {
@@ -9,8 +10,9 @@ int Evaluation::evaluate(const GameState& state)
     CellState me = state.getMyPlayer();
     CellState opp = state.getOpponent();
 
-    if (int end = evaluateTerminal(b, me, opp); end != 0)
-        return end;
+    int terminal = evaluateTerminal(b, me, opp);
+    if (terminal != 0)
+        return terminal;
 
     int score = 0;
 
@@ -18,17 +20,7 @@ int Evaluation::evaluate(const GameState& state)
     score += evaluateBoards(b, me, opp);
     score += evaluateForcedMove(b, me, opp);
 
-    return score;
-}
-
-int Evaluation::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
-{
-    CellState w = b.checkWinner();
-
-    if (w == me) return EvalWeights::WIN;
-    if (w == opp) return -EvalWeights::WIN;
-
-    return 0;
+    return std::clamp(score, -10000, 10000);
 }
 
 int Evaluation::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp)
@@ -42,6 +34,7 @@ int Evaluation::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp
         for (int i : line)
         {
             CellState s = b.getBoard(i).checkWinner();
+
             if (s == me) meCount++;
             else if (s == opp) oppCount++;
         }
@@ -83,10 +76,10 @@ int Evaluation::evaluateBoards(const UltimateBoard& b, CellState me, CellState o
 
     return score;
 }
-
 int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
 {
     int score = 0;
+
     CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
 
     if (sb.getCell(4).getState() == me) score += EvalWeights::CENTER;
@@ -106,7 +99,7 @@ int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
 
         for (int i : line)
         {
-            auto s = sb.getCell(i).getState();
+            CellState s = sb.getCell(i).getState();
 
             if (s == me) meCount++;
             else if (s == opp) oppCount++;
@@ -133,19 +126,28 @@ int Evaluation::evaluateForcedMove(const UltimateBoard& b, CellState me, CellSta
     const SubBoard& sb = b.getBoard(active);
 
     if (!sb.isPlayable())
-        return EvalWeights::FORCED_GOOD;
+        return 0;
 
     int oppPotential = evaluateSubBoard(sb, opp);
     int myPotential  = evaluateSubBoard(sb, me);
 
     int score = 0;
 
-    score -= oppPotential * 10;
-
-    score += myPotential * 3;
+    score -= oppPotential * 5;
+    score += myPotential * 2;
 
     if (oppPotential >= EvalWeights::SUB_TWO)
         score -= EvalWeights::FORCED_BAD;
 
     return score;
+}
+
+int Evaluation::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
+{
+    CellState w = b.checkWinner();
+
+    if (w == me) return EvalWeights::WIN;
+    if (w == opp) return -EvalWeights::WIN;
+
+    return 0;
 }

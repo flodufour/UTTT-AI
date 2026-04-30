@@ -3,6 +3,15 @@
 #include "core/UltimateBoard.h"
 #include "main.h"
 #include <vector>
+#include <stack>
+
+struct StateSnapshot
+{
+    AIMove move;
+    CellState currentPlayer;
+    int activeBoard;
+};
+
 
 class GameState
 {
@@ -14,6 +23,8 @@ private:
     CellState _opponent;
     CellState _currentPlayer;
 
+    std::stack<StateSnapshot> _history;
+
 public:
     GameState();
 
@@ -23,7 +34,7 @@ public:
 
     void reset();
 
-    void applyMove(const AIMove& move);
+    bool applyMove(const AIMove& move);
 
     CellState getCurrentPlayer() const;
 
@@ -39,4 +50,8 @@ public:
 
     CellState getWinner() const;
 
+    void undoMove();
+
+
 };
+

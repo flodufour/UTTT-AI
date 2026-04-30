@@ -6,7 +6,7 @@
 int main()
 {
 
-    game.initialize(10, Level::MEDIUM_1, Mode::ARENA, false, "Pseudo");
+    game.initialize(10, Level::MEDIUM_2, Mode::ARENA, false, "Pseudo");
 
     MoveConverter converter;
 
@@ -24,7 +24,7 @@ int main()
             AIMove opponentAIMove = converter.toAIMove(opponentMove);
 
             if(!initialized){
-                if(opponentAIMove.cellIndex ==-4)
+                if (opponentAIMove.boardIndex < 0 || opponentAIMove.cellIndex < 0)
                 {
                     manager.init(CellState::X);
                     std::cerr << "HELLOIA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;

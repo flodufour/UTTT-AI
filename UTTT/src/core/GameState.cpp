@@ -9,6 +9,13 @@ GameState::GameState()
 void GameState::reset()
 {
     _board.reset();
+
+    while (!_history.empty())
+        _history.pop();
+
+    _currentPlayer = CellState::X;
+    _myPlayer = CellState::EMPTY;
+    _opponent = CellState::EMPTY;
 }
 
 void GameState::setPlayers(CellState me)
@@ -19,10 +26,19 @@ void GameState::setPlayers(CellState me)
     _currentPlayer = CellState::X;
 }
 
-void GameState::applyMove(const AIMove& aIMove)
+bool GameState::applyMove(const AIMove& aIMove)
 {
-    _board.playMove(aIMove, _currentPlayer);
+    if (!_board.playMove(aIMove, _currentPlayer))
+        return false;
+
+    _history.push({
+        aIMove,
+        _currentPlayer,
+        _board.getActiveBoard()
+    });
+
     switchPlayers();
+    return true;
 }
 
 void GameState::switchPlayers()
@@ -79,3 +95,15 @@ CellState GameState::getWinner() const
     return _board.checkWinner();
 }
 
+void GameState::undoMove()
+{
+    if (_history.empty())
+        return;
+
+    StateSnapshot snap = _history.top();
+    _history.pop();
+
+    _board.undoMove();
+    _board.updateActiveBoard(snap.activeBoard);
+    _currentPlayer = snap.currentPlayer;
+}
