@@ -1,5 +1,5 @@
 #pragma once
-
+#include "core/GameState.h"
 
 /// @interface IEvaluator
 /// @brief Interface for game state evaluation

@@ -1,32 +1,45 @@
-#include "ai/training/MatchRunner.h"
-#include "ai/strategy/RandomStrategy.h"
 #include "ai/strategy/MinimaxStrategy.h"
 #include "ai/evaluate/HeuristicEvaluator.h"
+#include "ai/training/DataLogger.h"
+#include "core/GameState.h"
+
 #include <iostream>
 
 int main()
 {
-    std::cerr << "START\n";
-    HeuristicEvaluator eval;
+    std::cerr << "=== GAME LOG START ===\n";
 
-    MinimaxStrategy bot1(&eval);
-    RandomStrategy bot2;
+    DataLogger logger("game.json");
 
-    MatchRunner runner;
+    GameState state;
+    state.reset();
 
-    GameResult result = runner.runMatch(bot1, bot2);
+    logger.startGame();
 
-    std::cout << "Winner: ";
+    while (!state.isTerminal())
+    {
+        logger.addState(state);
 
-    if (result.winner == CellState::X)
-        std::cout << "X";
-    else if (result.winner == CellState::O)
-        std::cout << "O";
-    else
-        std::cout << "Draw";
+        MinimaxStrategy* current =
+            (state.getCurrentPlayer() == CellState::X)
+            ? &playerX
+            : &playerO;
 
-    std::cout << "\nMoves played: " << result.moveCount << std::endl;
+        AIMove move = current->chooseMove(state);
+        state.applyMove(move);
+    }
 
-    system("pause");
+    logger.addState(state);
+
+    int result = 0;
+    if (state.getWinner() == CellState::X) result = 1;
+    else if (state.getWinner() == CellState::O) result = -1;
+
+    logger.endGame(result);
+    logger.save();
+
+    std::cerr << "Game saved to game.json\n";
+    std::cerr << "=== GAME LOG END ===\n";
+
     return 0;
 }
