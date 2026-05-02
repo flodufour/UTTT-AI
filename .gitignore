@@ -25,3 +25,19 @@ Desktop.ini
 
 *~
 *.bak
+
+# Doxygen
+
+html/
+latex/
+xml/
+man/
+doc/
+docs/html/
+docs/latex/
+docs/xml/
+
+Doxyfile.bak
+Doxyfile.save
+*.doxygen
+*.tag

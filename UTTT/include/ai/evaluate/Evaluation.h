@@ -1,8 +1,9 @@
 #pragma once
 
 #include "core/GameState.h"
+#include "IEvaluator.h"
 
-class Evaluation {
+class Evaluation : IEvaluator {
 public:
     int evaluate(const GameState& state);
 

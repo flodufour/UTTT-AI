@@ -6,7 +6,7 @@
 int main()
 {
 
-    game.initialize(10, Level::MEDIUM_2, Mode::ARENA, false, "Pseudo");
+    game.initialize(10, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
 
     MoveConverter converter;
 

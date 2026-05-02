@@ -53,7 +53,6 @@
 		<Unit filename="include/utils/MoveConverter.h" />
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/Evaluation.cpp" />
-		<Unit filename="src/ai/strategy/MinMaxStrategy.h" />
 		<Unit filename="src/ai/strategy/MinimaxStrategy.cpp" />
 		<Unit filename="src/ai/strategy/RandomStrategy.cpp" />
 		<Unit filename="src/ai/strategy/SimpleStrategy.cpp" />
