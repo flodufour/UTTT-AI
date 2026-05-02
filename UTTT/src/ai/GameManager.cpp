@@ -2,11 +2,12 @@
 #include "ai/strategy/RandomStrategy.h"
 #include "ai/strategy/SimpleStrategy.h"
 #include "ai/strategy/MinimaxStrategy.h"
+#include "ai/evaluate/HeuristicEvaluator.h"
 #include <iostream>
 
 GameManager::GameManager()
 {
-    _strategy = new MinimaxStrategy();
+    _strategy = new MinimaxStrategy(new HeuristicEvaluator());
 }
 
 void GameManager::init(CellState mySide)

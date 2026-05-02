@@ -1,9 +1,9 @@
-#include "ai/evaluate/Evaluation.h"
+#include "ai/evaluate/HeuristicEvaluator.h"
 #include "core/WinPatterns.h"
 #include "core/SubBoard.h"
 #include <algorithm>
 
-int Evaluation::evaluate(const GameState& state)
+int HeuristicEvaluator::evaluate(const GameState& state)
 {
     const auto& b = state.getBoard();
 
@@ -23,7 +23,7 @@ int Evaluation::evaluate(const GameState& state)
     return std::clamp(score, -10000, 10000);
 }
 
-int Evaluation::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp)
 {
     int score = 0;
 
@@ -58,7 +58,7 @@ int Evaluation::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp
     return score;
 }
 
-int Evaluation::evaluateBoards(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateBoards(const UltimateBoard& b, CellState me, CellState opp)
 {
     int score = 0;
 
@@ -76,7 +76,7 @@ int Evaluation::evaluateBoards(const UltimateBoard& b, CellState me, CellState o
 
     return score;
 }
-int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
+int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb, CellState me)
 {
     int score = 0;
 
@@ -116,7 +116,7 @@ int Evaluation::evaluateSubBoard(const SubBoard& sb, CellState me)
     return score;
 }
 
-int Evaluation::evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp)
 {
     int active = b.getActiveBoard();
 
@@ -142,7 +142,7 @@ int Evaluation::evaluateForcedMove(const UltimateBoard& b, CellState me, CellSta
     return score;
 }
 
-int Evaluation::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
 {
     CellState w = b.checkWinner();
 

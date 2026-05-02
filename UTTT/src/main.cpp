@@ -27,22 +27,22 @@ int main()
                 if (opponentAIMove.boardIndex < 0 || opponentAIMove.cellIndex < 0)
                 {
                     manager.init(CellState::X);
-                    std::cerr << "HELLOIA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                    std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
                 }
                 else{
                     manager.init(CellState::O);
-                    std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                    std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
                     manager.applyMove(opponentAIMove);
                 }
                 initialized = true;
             }
             else {
-                std::cerr << "IA move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+                std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
                 manager.applyMove(opponentAIMove);
             }
 
             AIMove myMove = manager.chooseMove();
-            std::cerr << "Send move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;
+            std::cerr << "my move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;
             manager.applyMove(myMove);
             GameMove engineMove = converter.toGameMove(myMove);
             game.setMove(engineMove);

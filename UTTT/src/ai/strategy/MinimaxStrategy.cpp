@@ -61,15 +61,15 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
 int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bool maximizing)
 {
     if (depth == 0 || state.isTerminal())
-        return _eval.evaluate(state);
+        return _eval->evaluate(state);
 
     if (isTimeUp())
-        return _eval.evaluate(state);
+        return _eval->evaluate(state);
 
     auto moves = state.getValidMoves();
 
     if (moves.empty())
-        return _eval.evaluate(state);
+        return _eval->evaluate(state);
 
     int best = maximizing ? -1000000 : 1000000;
 
@@ -118,4 +118,12 @@ int MinimaxStrategy::heuristicScore(const GameState& state, const AIMove& move)
         score += 20;
 
     return score;
+}
+
+MinimaxStrategy::MinimaxStrategy(IEvaluator* eval)
+{
+    if (!eval)
+        throw std::runtime_error("Evaluator is null");
+
+    _eval = eval;
 }

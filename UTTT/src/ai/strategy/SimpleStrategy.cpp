@@ -1,5 +1,6 @@
 #include "ai/strategy/SimpleStrategy.h"
 
+
 AIMove SimpleStrategy::chooseMove(const GameState& state)
 {
     auto moves = state.getValidMoves();

@@ -1,11 +1,11 @@
 #pragma once
 #include "IStrategy.h"
-#include "ai/evaluate/Evaluation.h"
+#include "ai/evaluate/HeuristicEvaluator.h"
 
 class RandomStrategy : public IStrategy {
 public:
     AIMove chooseMove(const GameState& state) override;
 
 private:
-    Evaluation _eval;
+    HeuristicEvaluator _eval;
 };

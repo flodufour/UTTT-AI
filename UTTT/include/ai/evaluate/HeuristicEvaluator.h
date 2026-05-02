@@ -3,7 +3,14 @@
 #include "core/GameState.h"
 #include "IEvaluator.h"
 
-class Evaluation : IEvaluator {
+/// @class HeuristicEvaluator
+/// @brief Rule-based evaluation function for Ultimate Tic Tac Toe.
+///
+/// Computes a score using handcrafted heuristics such as:
+/// - meta board control
+/// - sub-board strength
+/// - forced move pressure
+class HeuristicEvaluator : public IEvaluator {
 public:
     int evaluate(const GameState& state);
 

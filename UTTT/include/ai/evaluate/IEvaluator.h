@@ -14,6 +14,7 @@ public:
     /// @param state current game state
     /// @return evaluation score (higher = better position)
 
-    virtual int evaluate(const GameState& state);
+    virtual int evaluate(const GameState& state) = 0 ;
+    virtual ~IEvaluator() = default;
 
 };
