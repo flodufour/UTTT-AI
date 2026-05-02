@@ -41,3 +41,8 @@ Doxyfile.bak
 Doxyfile.save
 *.doxygen
 *.tag
+
+# Data
+*.json
+*.jsonl
+*.csv

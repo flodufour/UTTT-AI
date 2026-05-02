@@ -1,25 +1,42 @@
 #include "ai/strategy/MinimaxStrategy.h"
 #include <algorithm>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 AIMove MinimaxStrategy::chooseMove(const GameState& state)
 {
     _start = std::chrono::steady_clock::now();
 
-    auto moves = state.getValidMoves();
-    if (moves.empty())
+    auto topMoves = getTopMoves(state);
+
+    if (topMoves.empty())
         return {-1, -1};
+
+    int randomIndex = rand() % topMoves.size();
+
+    return topMoves[randomIndex].move;
+}
+
+std::vector<MinimaxStrategy::ScoredMove>
+MinimaxStrategy::getTopMoves(const GameState& state)
+{
+    auto moves = state.getValidMoves();
+
+    std::vector<ScoredMove> scoredMoves;
+
+    if (moves.empty())
+        return scoredMoves;
 
     AIMove bestMove = moves[0];
     int bestScoreGlobal = -1000000;
 
-    for (int depth = 1; depth <= 3; depth++)
+    for (int depth = 1; depth <= 5; depth++)
     {
         if (isTimeUp())
             break;
 
-        int bestScore = -1000000;
-        AIMove bestMoveDepth = {-1, -1};
+        scoredMoves.clear();
 
         std::sort(moves.begin(), moves.end(),
         [&](const AIMove& a, const AIMove& b)
@@ -37,25 +54,31 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
 
             int score = minimax(copy, depth - 1, -1000000, 1000000, false);
 
-            if (score > bestScore)
+            scoredMoves.push_back({move, score});
+
+            if (score > bestScoreGlobal)
             {
-                bestScore = score;
-                bestMoveDepth = move;
+                bestScoreGlobal = score;
+                bestMove = move;
             }
         }
 
-        if (!isTimeUp())
-        {
-            bestMove = bestMoveDepth;
-            bestScoreGlobal = bestScore;
-        }
-        else
-        {
+        if (isTimeUp())
             break;
-        }
     }
 
-    return bestMove;
+    std::sort(scoredMoves.begin(), scoredMoves.end(),
+        [](const ScoredMove& a, const ScoredMove& b)
+        {
+            return a.score > b.score;
+        });
+
+    if (scoredMoves.size() > _topK)
+    {
+        scoredMoves.resize(_topK);
+    }
+
+    return scoredMoves;
 }
 
 int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bool maximizing)
@@ -104,7 +127,10 @@ int MinimaxStrategy::minimax(GameState state, int depth, int alpha, int beta, bo
 bool MinimaxStrategy::isTimeUp()
 {
     auto now = std::chrono::steady_clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(now - _start).count() >= _maxTimeMs;
+
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+        now - _start
+    ).count() >= _maxTimeMs;
 }
 
 int MinimaxStrategy::heuristicScore(const GameState& state, const AIMove& move)
@@ -126,4 +152,6 @@ MinimaxStrategy::MinimaxStrategy(IEvaluator* eval)
         throw std::runtime_error("Evaluator is null");
 
     _eval = eval;
+
+    srand(time(nullptr));
 }

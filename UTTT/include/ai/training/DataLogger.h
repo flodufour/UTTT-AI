@@ -1,32 +1,48 @@
 #pragma once
 
+#include <fstream>
+#include <array>
 #include <vector>
 #include <string>
 
-class GameState;
-class AIMove;
-
 class DataLogger {
 public:
-    struct Game {
-        std::vector<std::vector<int>> states;
-        int result;
+    static constexpr int SIZE = 81;
+
+    DataLogger(const std::string& filename);
+    ~DataLogger();
+
+    void setGameId(int gameId);
+
+    void logState(
+        const std::array<int, SIZE>& state,
+        int board,
+        int cell,
+        int player,
+        int activeBoard
+    );
+
+    void setResult(int result);
+
+    void flush();
+
+private:
+
+    struct Sample {
+        std::array<int, SIZE> state;
+        int board = 0;
+        int cell = 0;
+        int player = 0;
+        int activeBoard = -1;
+        int moveId = 0;
     };
 
-public:
-    DataLogger(const std::string& filename);
-
-    void startGame();
-    void addState(const GameState& state);
-    void endGame(int result);
-
-    void save();
-
 private:
-    std::vector<int> flattenState(const GameState& state);
+    std::ofstream _file;
+    std::vector<Sample> _buffer;
 
-private:
-    std::string _filename;
-    Game _currentGame;
-    std::vector<Game> _games;
+    int _gameId = 0;
+    int _result = 0;
+
+    int _moveId = 0;
 };

@@ -48,6 +48,7 @@ int main()
             game.setMove(engineMove);
 
         }
+        manager.finalizeGame();
     }
 
     return 0;
