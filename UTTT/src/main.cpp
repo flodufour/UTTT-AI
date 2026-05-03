@@ -12,20 +12,15 @@ int main()
 
     GameManager manager(start_timestamp);
 
-    game.initialize(1, Level::EASY_2, Mode::ARENA, false, "MyAi");
+    game.initialize(1, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {
-        bool initialized = false;
+        GameMove opponentMove;
+        game.getMove(opponentMove);
+        AIMove opponentAIMove = converter.toAIMove(opponentMove);
 
-        while (!game.isFinish())
-        {
-            GameMove opponentMove;
-            game.getMove(opponentMove);
-            AIMove opponentAIMove = converter.toAIMove(opponentMove);
-
-            if(!initialized){
-                if (opponentAIMove.boardIndex < 0 || opponentAIMove.cellIndex < 0)
+        if (opponentAIMove.boardIndex < 0 || opponentAIMove.cellIndex < 0)
                 {
                     manager.init(CellState::X);
                     std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
@@ -35,26 +30,15 @@ int main()
                     std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
                     manager.applyMove(opponentAIMove);
                 }
-                initialized = true;
-            }
-            else {
-                std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
-                manager.applyMove(opponentAIMove);
-            }
 
-            if(game.isFinish()){
-                break;
-            }
-
+        while (!game.isFinish())
+        {
             AIMove myMove = manager.chooseMove();
             std::cerr << "my move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;
             manager.applyMove(myMove);
             GameMove engineMove = converter.toGameMove(myMove);
             game.setMove(engineMove);
 
-        }
-
-        if(game.getWinner() == Winner::IA){
             GameMove opponentMove;
             game.getMove(opponentMove);
             AIMove opponentAIMove = converter.toAIMove(opponentMove);
@@ -62,6 +46,7 @@ int main()
             manager.applyMove(opponentAIMove);
 
         }
+
         manager.finalizeGame();
 
     }
