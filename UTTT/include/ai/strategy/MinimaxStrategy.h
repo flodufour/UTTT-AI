@@ -19,7 +19,7 @@ private:
 
     int minimax(GameState state, int depth, int alpha, int beta, bool maximizing);
 
-    int _topK = 4;
+    int _topK = 3;
 
     IEvaluator* _eval;
 

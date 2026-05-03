@@ -90,6 +90,12 @@ void GameManager::finalizeGame()
         (w == CellState::X) ? 1 :
         (w == CellState::O) ? 2 : 0;
 
+    std::cout << "state winner  = " << static_cast<int>(w) << std::endl;
+
     _logger->setResult(result);
     _logger->flush();
+}
+
+CellState GameManager::getOpponent() const {
+    return _opponent;
 }

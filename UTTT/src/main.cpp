@@ -12,7 +12,7 @@ int main()
 
     GameManager manager(start_timestamp);
 
-    game.initialize(100, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
+    game.initialize(1, Level::EASY_2, Mode::ARENA, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {
@@ -42,6 +42,10 @@ int main()
                 manager.applyMove(opponentAIMove);
             }
 
+            if(game.isFinish()){
+                break;
+            }
+
             AIMove myMove = manager.chooseMove();
             std::cerr << "my move " << myMove.boardIndex << " " << myMove.cellIndex<< std::endl;
             manager.applyMove(myMove);
@@ -49,9 +53,18 @@ int main()
             game.setMove(engineMove);
 
         }
-        manager.finalizeGame();
-    }
 
+        if(game.getWinner() == Winner::IA){
+            GameMove opponentMove;
+            game.getMove(opponentMove);
+            AIMove opponentAIMove = converter.toAIMove(opponentMove);
+            std::cerr << "opponent move " << opponentAIMove.boardIndex << " " << opponentAIMove.cellIndex << std::endl;
+            manager.applyMove(opponentAIMove);
+
+        }
+        manager.finalizeGame();
+
+    }
     return 0;
 }
 

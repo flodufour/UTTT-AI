@@ -34,4 +34,6 @@ public:
     void finalizeGame();
 
     const GameState& getState() const;
+
+    CellState getOpponent() const;
 };
