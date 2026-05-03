@@ -49,7 +49,7 @@ void DataLogger::flush()
     {
         _file << "{";
 
-        _file << "\"game_id\":" << _gameId << "_" << _runTimeStamp << ",";
+        _file << "\"game_id\":\"" << _gameId << "_" << _runTimeStamp << "\",";
         _file << "\"move_id\":" << s.moveId << ",";
 
         _file << "\"state\":[";

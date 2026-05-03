@@ -46,3 +46,6 @@ Doxyfile.save
 *.json
 *.jsonl
 *.csv
+
+# Python
+training_py/
