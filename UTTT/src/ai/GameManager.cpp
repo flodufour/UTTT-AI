@@ -9,6 +9,13 @@ int GameManager::s_gameId = 0;
 
 GameManager::GameManager()
 {
+    _runTimestamp = 0;
+    _strategy = new MinimaxStrategy(new HeuristicEvaluator());
+}
+
+GameManager::GameManager(long long runTimestamp)
+{
+    _runTimestamp = runTimestamp;
     _strategy = new MinimaxStrategy(new HeuristicEvaluator());
 }
 
@@ -22,7 +29,7 @@ void GameManager::init(CellState mySide)
     _state.setPlayers(mySide);
     if (!_logger)
         _logger = std::make_unique<DataLogger>("dataset.jsonl");
-    _logger->setGameId(_gameId);
+    _logger->setGameId(_gameId, _runTimestamp);
 }
 
 void GameManager::applyMove(const AIMove& move)

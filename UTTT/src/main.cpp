@@ -2,16 +2,17 @@
 #include "main.h"
 #include "ai/GameManager.h"
 #include "utils/MoveConverter.h"
+#include <ctime>
 
 int main()
 {
-
-    game.initialize(10, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
+    long long start_timestamp = std::time(nullptr);
 
     MoveConverter converter;
 
-    GameManager manager;
+    GameManager manager(start_timestamp);
 
+    game.initialize(100, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {

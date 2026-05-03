@@ -31,7 +31,7 @@ MinimaxStrategy::getTopMoves(const GameState& state)
     AIMove bestMove = moves[0];
     int bestScoreGlobal = -1000000;
 
-    for (int depth = 1; depth <= 5; depth++)
+    for (int depth = 1; depth <= 3; depth++)
     {
         if (isTimeUp())
             break;

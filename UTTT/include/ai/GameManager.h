@@ -12,6 +12,8 @@ private:
     static int s_gameId;
     int _gameId;
 
+    long long _runTimestamp;
+
     GameState _state;
     CellState _me;
     CellState _opponent;
@@ -20,6 +22,8 @@ private:
 
 public:
     GameManager();
+
+    GameManager(long long _runTimestamp);
 
     void init(CellState mySide);
 

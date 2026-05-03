@@ -11,8 +11,9 @@ DataLogger::~DataLogger()
         _file.close();
 }
 
-void DataLogger::setGameId(int gameId)
+void DataLogger::setGameId(int gameId, long long runTimeStamp)
 {
+    _runTimeStamp = runTimeStamp;
     _gameId = gameId;
     _moveId = 0;
 }
@@ -48,7 +49,7 @@ void DataLogger::flush()
     {
         _file << "{";
 
-        _file << "\"game_id\":" << _gameId << ",";
+        _file << "\"game_id\":" << _gameId << "_" << _runTimeStamp << ",";
         _file << "\"move_id\":" << s.moveId << ",";
 
         _file << "\"state\":[";

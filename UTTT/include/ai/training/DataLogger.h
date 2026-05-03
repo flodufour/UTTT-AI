@@ -12,7 +12,7 @@ public:
     DataLogger(const std::string& filename);
     ~DataLogger();
 
-    void setGameId(int gameId);
+    void setGameId(int gameId, long long runTimeStamp);
 
     void logState(
         const std::array<int, SIZE>& state,
@@ -38,6 +38,7 @@ private:
     };
 
 private:
+    long long _runTimeStamp;
     std::ofstream _file;
     std::vector<Sample> _buffer;
 
