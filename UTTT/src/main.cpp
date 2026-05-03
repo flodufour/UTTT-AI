@@ -12,7 +12,7 @@ int main()
 
     GameManager manager(start_timestamp);
 
-    game.initialize(1, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
+    game.initialize(100, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {
@@ -50,6 +50,7 @@ int main()
         manager.finalizeGame();
 
     }
+    std::cerr << "MAIN FINISHED" << std::endl;
     return 0;
 }
 

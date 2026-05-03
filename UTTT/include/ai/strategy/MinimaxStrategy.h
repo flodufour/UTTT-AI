@@ -24,7 +24,7 @@ private:
     IEvaluator* _eval;
 
     std::chrono::steady_clock::time_point _start;
-    int _maxTimeMs = 350;
+    int _maxTimeMs = 300;
 
     bool isTimeUp();
 

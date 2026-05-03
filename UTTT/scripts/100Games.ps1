@@ -1,32 +1,29 @@
-# Dataset Generator
-
 Set-Location "$PSScriptRoot\..\bin\debug"
 
 1..100 | ForEach-Object {
-    Write-Host "`nRUN $_ / 100"
+    Write-Host "RUN $_ / 100"
 
-    $process = Start-Process .\UTTT_Template.exe `
-        -NoNewWindow `
-        -RedirectStandardOutput "output.log" `
+    $logFile = "run.log"
+    $errFile = "run.err"
+
+    $process = Start-Process `
+        -FilePath ".\UTTT_Template.exe" `
+        -RedirectStandardOutput $logFile `
+        -RedirectStandardError $errFile `
         -PassThru
 
-    while ($true) {
-        Start-Sleep -Milliseconds 500
+    while (-not $process.HasExited) {
+        Start-Sleep -Milliseconds 300
+        $process.Refresh()
 
-        if (Test-Path "output.log") {
-            $content = Get-Content "output.log" -Raw
+        if (Test-Path $errFile) {
+            $errContent = Get-Content $errFile -Raw
 
-            if ($content -match "MAIN FINISHED") {
-                Write-Host "Game batch finished -> killing process"
-
-                Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-                Remove-Item "output.log" -ErrorAction SilentlyContinue
+            if ($errContent -match "MAIN FINISHED") {
+                Write-Host "MAIN FINISHED detected -> killing process $($process.Id)"
+                taskkill /PID $process.Id /T /F | Out-Null
                 break
             }
-        }
-
-        if ($process.HasExited) {
-            break
         }
     }
 }
