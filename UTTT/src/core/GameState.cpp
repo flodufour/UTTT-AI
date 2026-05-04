@@ -104,6 +104,8 @@ void GameState::undoMove()
     _history.pop();
 
     _board.undoMove();
+
     _board.updateActiveBoard(snap.activeBoard);
+
     _currentPlayer = snap.currentPlayer;
 }

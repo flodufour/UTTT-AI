@@ -36,4 +36,6 @@ public:
     const GameState& getState() const;
 
     CellState getOpponent() const;
+
+    ~GameManager();
 };

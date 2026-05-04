@@ -25,24 +25,28 @@ private:
 
     struct Weights
     {
-        int WIN = 100000;
 
-        int META_THREE = 3000;
-        int META_TWO   = 600;
-        int META_ONE   = 100;
+    int WIN = 100000;
 
-        int SUB_WIN = 150;
-        int SUB_TWO = 30;
+    int META_THREE = 8000;
+    int META_TWO   = 1500;
+    int META_ONE   = 300;
 
-        int CENTER = 50;
 
-        int FORCED_GOOD = 200;
-        int FORCED_BAD = 250;
+    int SUB_WIN = 200;
+    int SUB_TWO = 250;
 
-        int boardWeight[9] = {
-        3,2,3,
-        2,4,2,
-        3,2,3
+    int CENTER = 60;
+
+    int CORNER = 20;
+
+    int FORCED_GOOD = 300;
+    int FORCED_BAD = 500;
+
+    int boardWeight[9] = {
+        3, 2, 3,
+        2, 5, 2,
+        3, 2, 3
     };
     } _w;
 

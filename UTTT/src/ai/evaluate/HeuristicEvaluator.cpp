@@ -127,16 +127,31 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b, CellState me,
     if (!sb.isPlayable())
         return 0;
 
-    int oppPotential = evaluateSubBoard(sb, opp);
-    int myPotential  = evaluateSubBoard(sb, me);
-
     int score = 0;
 
-    score -= oppPotential * 5;
-    score += myPotential * 2;
+    int oppThreat = evaluateSubBoard(sb, opp);
+    int myDefense = evaluateSubBoard(sb, me);
 
-    if (oppPotential >= _w.SUB_TWO)
-        score -= _w.FORCED_BAD;
+    score += (oppThreat * 3);
+    score -= (myDefense * 2);
+
+    for (const auto& line : WIN_LINES)
+    {
+        int oppCount = 0;
+        int empty = 0;
+
+        for (int i : line)
+        {
+            CellState s = sb.getCell(i).getState();
+            if (s == opp) oppCount++;
+            else if (s == CellState::EMPTY) empty++;
+        }
+
+        if (oppCount == 2 && empty == 1)
+        {
+            score -= _w.WIN / 5;
+        }
+    }
 
     return score;
 }

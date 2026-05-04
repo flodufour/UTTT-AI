@@ -36,6 +36,8 @@ void GameManager::applyMove(const AIMove& move)
 {
     _state.applyMove(move);
 
+    return;
+
     if (_logger)
     {
         std::array<int, DataLogger::SIZE> state{};
@@ -96,4 +98,9 @@ void GameManager::finalizeGame()
 
 CellState GameManager::getOpponent() const {
     return _opponent;
+}
+
+GameManager::~GameManager()
+{
+    delete _strategy;
 }
