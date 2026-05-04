@@ -5,15 +5,6 @@
 #include <vector>
 #include <stack>
 
-/// @struct StateSnapshot
-/// @brief Stores a snapshot of a game state for undo functionality.
-struct StateSnapshot
-{
-    AIMove move;
-    CellState currentPlayer;
-    int activeBoard;
-};
-
 /// @class GameState
 /// @brief Represents the full state of an Ultimate Tic Tac Toe game.
 ///
@@ -30,8 +21,6 @@ private:
     CellState _myPlayer;
     CellState _opponent;
     CellState _currentPlayer;
-
-    std::stack<StateSnapshot> _history;
 
 public:
 
@@ -76,8 +65,6 @@ public:
     /// @return Winning player or EMPTY if no winner.
     CellState getWinner() const;
 
-    /// @brief Undoes the last move.
-    void undoMove();
 
 
 };

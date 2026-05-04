@@ -3,20 +3,17 @@
 #include "ai/strategy/SimpleStrategy.h"
 #include "ai/strategy/MinimaxStrategy.h"
 #include "ai/evaluate/HeuristicEvaluator.h"
+#include "ai/strategy/MCTSStrategy.h"
 #include <iostream>
 
 int GameManager::s_gameId = 0;
 
-GameManager::GameManager()
-{
-    _runTimestamp = 0;
-    _strategy = new MinimaxStrategy(new HeuristicEvaluator());
-}
+
 
 GameManager::GameManager(long long runTimestamp)
 {
     _runTimestamp = runTimestamp;
-    _strategy = new MinimaxStrategy(new HeuristicEvaluator());
+    _strategy = std::make_unique<MCTSStrategy>(3000);
 }
 
 void GameManager::init(CellState mySide)
@@ -100,5 +97,4 @@ CellState GameManager::getOpponent() const {
 
 GameManager::~GameManager()
 {
-    delete _strategy;
 }

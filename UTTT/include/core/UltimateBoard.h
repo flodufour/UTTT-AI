@@ -5,15 +5,6 @@
 #include <array>
 #include <stack>
 
-
-/// @struct UltimateMove
-/// @brief Represents a move in Ultimate Tic Tac Toe (sub-board + cell).
-struct UltimateMove
-{
-    AIMove move;
-    int previousActiveBoard;
-};
-
 /// @class UltimateBoard
 /// @brief Represents the full Ultimate Tic Tac Toe game board.
 ///
@@ -23,8 +14,6 @@ private:
     std::array<SubBoard, 9> _boards;
 
     int _activeBoard;
-
-    std::stack<UltimateMove> _history;
 
 public:
     /// @brief Constructs an empty Ultimate board.
@@ -74,6 +63,4 @@ public:
     /// @return True if no moves have been played.
     bool isEmpty() const;
 
-    /// @brief Undoes the last move played.
-    void undoMove();
 };

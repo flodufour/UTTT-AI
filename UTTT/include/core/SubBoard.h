@@ -4,14 +4,6 @@
 #include <array>
 #include <stack>
 
-/// @struct SubMove
-/// @brief Represents a move made inside a sub-board
-struct SubMove
-{
-    int index;                  ///< Index of the played cell (0–8)
-    CellState previousState;    ///< State of the cell before the move
-};
-
 
 /// @class SubBoard
 /// @brief Represents a 3x3 Tic Tac Toe board
@@ -21,7 +13,6 @@ struct SubMove
 class SubBoard {
 private:
     std::array<Cell, 9> _cells;
-    std::stack<SubMove> _history;
 
 public:
     /// @brief Constructs an empty sub-board
@@ -57,6 +48,5 @@ public:
     /// @return true if all cells are EMPTY
     bool isEmpty() const;
 
-    /// @brief Undoes the last move played
-    void undoMove();
+
 };

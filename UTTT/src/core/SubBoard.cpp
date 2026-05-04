@@ -15,8 +15,6 @@ bool SubBoard::playMove(int index, CellState player) {
     if (checkWinner() != CellState::EMPTY)
         return false;
 
-    _history.push({index, _cells[index].getState()});
-
     _cells[index].setState(player);
     return true;
 }
@@ -63,7 +61,6 @@ void SubBoard::reset() {
         cell.setState(CellState::EMPTY);
     }
 
-     _history = std::stack<SubMove>();
 }
 
 bool SubBoard::isEmpty() const
@@ -74,15 +71,4 @@ bool SubBoard::isEmpty() const
             return false;
     }
     return true;
-}
-
-void SubBoard::undoMove()
-{
-    if (_history.empty())
-        return;
-
-    SubMove m = _history.top();
-    _history.pop();
-
-    _cells[m.index].setState(m.previousState);
 }

@@ -25,4 +25,15 @@ struct AIMove
         return boardIndex >= 0 && boardIndex < 9 &&
                cellIndex >= 0 && cellIndex < 9;
     }
+
+    bool operator==(const AIMove& other) const
+    {
+        return boardIndex == other.boardIndex &&
+               cellIndex == other.cellIndex;
+    }
+
+    bool operator!=(const AIMove& other) const
+    {
+        return !(*this == other);
+    }
 };

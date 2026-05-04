@@ -36,8 +36,6 @@ bool UltimateBoard::playMove(AIMove aIMove, CellState player) {
     if (!isValidMove(aIMove))
         return false;
 
-    _history.push({aIMove, _activeBoard});
-
     _boards[boardIndex].playMove(cellIndex, player);
 
     updateActiveBoard(cellIndex);
@@ -105,15 +103,4 @@ bool UltimateBoard::isEmpty() const
     return true;
 }
 
-void UltimateBoard::undoMove()
-{
-    if (_history.empty())
-        return;
 
-    UltimateMove last = _history.top();
-    _history.pop();
-
-    _boards[last.move.boardIndex].undoMove();
-
-    _activeBoard = last.previousActiveBoard;
-}

@@ -17,11 +17,10 @@ private:
     GameState _state;
     CellState _me;
     CellState _opponent;
-    IStrategy* _strategy;
+    std::unique_ptr<IStrategy> _strategy;
     std::unique_ptr<DataLogger> _logger;
 
 public:
-    GameManager();
 
     GameManager(long long _runTimestamp);
 

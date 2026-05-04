@@ -4,46 +4,54 @@
 #include "IEvaluator.h"
 
 /// @class HeuristicEvaluator
-/// @brief Rule-based evaluation function for Ultimate Tic Tac Toe.
+/// @brief Hierarchical evaluation for Ultimate Tic Tac Toe (MCTS-safe)
 ///
-/// Computes a score using handcrafted heuristics such as:
-/// - meta board control
-/// - sub-board strength
-/// - forced move pressure
-class HeuristicEvaluator : public IEvaluator {
+/// Design:
+/// - SubBoard  : tactical evaluation (local patterns)
+/// - MetaBoard : strategic evaluation (win conditions on boards)
+/// - Forced    : tempo / constraint pressure
+class HeuristicEvaluator : public IEvaluator
+{
 public:
     int evaluate(const GameState& state);
 
 private:
     int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp);
+
     int evaluateMeta(const UltimateBoard& b, CellState me, CellState opp);
+
     int evaluateBoards(const UltimateBoard& b, CellState me, CellState opp);
+
     int evaluateSubBoard(const SubBoard& sb, CellState me);
+
     int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp);
 
     int checkEndgame(const UltimateBoard& b, CellState me, CellState opp);
 
 private:
-    int boardWeight[9] = {
-        3,2,3,
-        2,4,2,
-        3,2,3
-    };
 
-    struct EvalWeights
+    struct PositionalWeights
     {
         static constexpr int WIN = 100000;
 
-        static constexpr int META_THREE = 3000;
-        static constexpr int META_TWO   = 600;
-        static constexpr int META_ONE   = 100;
+        static constexpr int META_THREE = 8000;
+        static constexpr int META_TWO   = 1200;
+        static constexpr int META_ONE   = 200;
 
-        static constexpr int SUB_WIN = 150;
-        static constexpr int SUB_TWO = 30;
+        static constexpr int SUB_WIN = 500;
+        static constexpr int SUB_TWO = 40;
 
-        static constexpr int CENTER = 50;
+        static constexpr int CENTER = 25;
+        static constexpr int CORNER = 10;
 
-        static constexpr int FORCED_GOOD = 200;
-        static constexpr int FORCED_BAD = 250;
+        static constexpr int FORCED_GOOD = 120;
+        static constexpr int FORCED_BAD  = 180;
+    };
+
+
+    int boardWeight[9] = {
+        3, 4, 3,
+        4, 6, 4,
+        3, 4, 3
     };
 };
