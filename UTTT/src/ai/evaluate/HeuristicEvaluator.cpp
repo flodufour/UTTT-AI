@@ -29,29 +29,30 @@ int HeuristicEvaluator::evaluateMeta(const UltimateBoard& b, CellState me, CellS
 
     for (const auto& line : WIN_LINES)
     {
-        int meScore = 0;
-        int oppScore = 0;
+        int meCount = 0, oppCount = 0;
 
         for (int i : line)
         {
             CellState s = b.getBoard(i).checkWinner();
 
-            int weight = _w.boardWeight[i];
-
-            if (s == me) meScore += weight;
-            else if (s == opp) oppScore += weight;
+            if (s == me) meCount++;
+            else if (s == opp) oppCount++;
         }
 
-        // win condition
-        if (meScore >= 12) return _w.WIN;
-        if (oppScore >= 12) return -_w.WIN;
+        if (meCount == 3) return EvalWeights::WIN;
+        if (oppCount == 3) return -EvalWeights::WIN;
 
-        int diff = meScore - oppScore;
+        if (meCount == 2 && oppCount == 0)
+            score += EvalWeights::META_TWO;
 
-        if (diff > 0)
-            score += _w.META_TWO * diff / 4;
-        else if (diff < 0)
-            score += _w.META_TWO * diff / 4; // diff négatif => pénalise automatiquement
+        if (oppCount == 2 && meCount == 0)
+            score -= EvalWeights::META_TWO;
+
+        if (meCount == 1 && oppCount == 0)
+            score += EvalWeights::META_ONE;
+
+        if (oppCount == 1 && meCount == 0)
+            score -= EvalWeights::META_ONE;
     }
 
     return score;
@@ -67,8 +68,8 @@ int HeuristicEvaluator::evaluateBoards(const UltimateBoard& b, CellState me, Cel
 
         CellState w = sb.checkWinner();
 
-        if (w == me) score += _w.SUB_WIN;
-        else if (w == opp) score -= _w.SUB_WIN;
+        if (w == me) score += EvalWeights::SUB_WIN;
+        else if (w == opp) score -= EvalWeights::SUB_WIN;
         else
             score += evaluateSubBoard(sb, me);
     }
@@ -81,8 +82,8 @@ int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb, CellState me)
 
     CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
 
-    if (sb.getCell(4).getState() == me) score += _w.CENTER;
-    if (sb.getCell(4).getState() == opp) score -= _w.CENTER;
+    if (sb.getCell(4).getState() == me) score += EvalWeights::CENTER;
+    if (sb.getCell(4).getState() == opp) score -= EvalWeights::CENTER;
 
     int corners[4] = {0,2,6,8};
 
@@ -106,10 +107,10 @@ int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb, CellState me)
         }
 
         if (meCount == 2 && empty == 1)
-            score += _w.SUB_TWO;
+            score += EvalWeights::SUB_TWO;
 
         if (oppCount == 2 && empty == 1)
-            score -= _w.SUB_TWO;
+            score -= EvalWeights::SUB_TWO;
     }
 
     return score;
@@ -127,31 +128,16 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b, CellState me,
     if (!sb.isPlayable())
         return 0;
 
+    int oppPotential = evaluateSubBoard(sb, opp);
+    int myPotential  = evaluateSubBoard(sb, me);
+
     int score = 0;
 
-    int oppThreat = evaluateSubBoard(sb, opp);
-    int myDefense = evaluateSubBoard(sb, me);
+    score -= oppPotential * 5;
+    score += myPotential * 2;
 
-    score += (oppThreat * 3);
-    score -= (myDefense * 2);
-
-    for (const auto& line : WIN_LINES)
-    {
-        int oppCount = 0;
-        int empty = 0;
-
-        for (int i : line)
-        {
-            CellState s = sb.getCell(i).getState();
-            if (s == opp) oppCount++;
-            else if (s == CellState::EMPTY) empty++;
-        }
-
-        if (oppCount == 2 && empty == 1)
-        {
-            score -= _w.WIN / 5;
-        }
-    }
+    if (oppPotential >= EvalWeights::SUB_TWO)
+        score -= EvalWeights::FORCED_BAD;
 
     return score;
 }
@@ -160,13 +146,8 @@ int HeuristicEvaluator::evaluateTerminal(const UltimateBoard& b, CellState me, C
 {
     CellState w = b.checkWinner();
 
-    if (w == me) return _w.WIN;
-    if (w == opp) return -_w.WIN;
+    if (w == me) return EvalWeights::WIN;
+    if (w == opp) return -EvalWeights::WIN;
 
     return 0;
-}
-
-HeuristicEvaluator::HeuristicEvaluator(const Weights& w)
-{
-    _w = w;
 }

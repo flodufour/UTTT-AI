@@ -2,28 +2,16 @@
 #include "IStrategy.h"
 #include "ai/evaluate/IEvaluator.h"
 #include <chrono>
-#include <unordered_map>
-#include <cstdint>
 
 class MinimaxStrategy : public IStrategy {
 public:
-    struct ScoredMove {
-    AIMove move;
-    int score;
-    };
-
     MinimaxStrategy(IEvaluator* eval);
 
     AIMove chooseMove(const GameState& state) override;
 
-    AIMove chooseRandomTopMove(const GameState& state);
-
-    std::vector<ScoredMove> getTopMoves(const GameState& state);
 private:
 
     int minimax(GameState state, int depth, int alpha, int beta, bool maximizing);
-
-    int _topK = 1;
 
     IEvaluator* _eval;
 
@@ -33,13 +21,4 @@ private:
     bool isTimeUp();
 
     int heuristicScore(const GameState& state, const AIMove& move);
-
-    struct TTEntry {
-    int score;
-    int depth;
-    };
-
-    std::unordered_map<uint64_t, TTEntry> _transpositionTable;
-
-    uint64_t computeHash(const GameState& state);
 };

@@ -11,6 +11,9 @@
 /// - sub-board strength
 /// - forced move pressure
 class HeuristicEvaluator : public IEvaluator {
+public:
+    int evaluate(const GameState& state);
+
 private:
     int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp);
     int evaluateMeta(const UltimateBoard& b, CellState me, CellState opp);
@@ -20,39 +23,27 @@ private:
 
     int checkEndgame(const UltimateBoard& b, CellState me, CellState opp);
 
-    public:
-
-
-    struct Weights
-    {
-
-    int WIN = 100000;
-
-    int META_THREE = 8000;
-    int META_TWO   = 1500;
-    int META_ONE   = 300;
-
-
-    int SUB_WIN = 200;
-    int SUB_TWO = 250;
-
-    int CENTER = 60;
-
-    int CORNER = 20;
-
-    int FORCED_GOOD = 300;
-    int FORCED_BAD = 500;
-
+private:
     int boardWeight[9] = {
-        3, 2, 3,
-        2, 5, 2,
-        3, 2, 3
+        3,2,3,
+        2,4,2,
+        3,2,3
     };
-    } _w;
 
-    HeuristicEvaluator() = default;
-    HeuristicEvaluator(const Weights& w);
+    struct EvalWeights
+    {
+        static constexpr int WIN = 100000;
 
-    int evaluate(const GameState& state);
+        static constexpr int META_THREE = 3000;
+        static constexpr int META_TWO   = 600;
+        static constexpr int META_ONE   = 100;
 
+        static constexpr int SUB_WIN = 150;
+        static constexpr int SUB_TWO = 30;
+
+        static constexpr int CENTER = 50;
+
+        static constexpr int FORCED_GOOD = 200;
+        static constexpr int FORCED_BAD = 250;
+    };
 };
