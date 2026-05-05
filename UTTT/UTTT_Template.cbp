@@ -73,7 +73,6 @@
 		<Unit filename="src/ai/training/TrainingMain.cpp">
 			<Option target="Training" />
 		</Unit>
-		<Unit filename="src/core/AIMove.cpp" />
 		<Unit filename="src/core/Cell.cpp" />
 		<Unit filename="src/core/GameState.cpp" />
 		<Unit filename="src/core/SubBoard.cpp" />
