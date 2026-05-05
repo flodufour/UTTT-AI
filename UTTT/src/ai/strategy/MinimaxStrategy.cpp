@@ -1,5 +1,6 @@
 #include "ai/strategy/MinimaxStrategy.h"
 #include <algorithm>
+#include <iostream>
 
 
 MinimaxStrategy::MinimaxStrategy(std::shared_ptr<IEvaluator> eval)
@@ -7,12 +8,17 @@ MinimaxStrategy::MinimaxStrategy(std::shared_ptr<IEvaluator> eval)
 {
     if (!_eval)
         return;
-    }
+}
 
+
+// ------------------------------------------------------------
+// ROOT MOVE SELECTION
+// ------------------------------------------------------------
 
 AIMove MinimaxStrategy::chooseMove(const GameState& state)
 {
     _start = std::chrono::steady_clock::now();
+    _rootPlayer = state.getMyPlayer();
 
     auto moves = state.getValidMoves();
     if (moves.empty())
@@ -20,6 +26,9 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
 
     AIMove bestMove = moves[0];
     int bestScore = -INF;
+
+    lastCompletedMove = moves[0];
+    lastCompletedScore = -INF;
 
     for (int depth = 1; depth <= MAX_DEPTH; depth++)
     {
@@ -35,10 +44,15 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
         AIMove localBest = moves[0];
         int localBestScore = -INF;
 
+        bool completedDepth = true;
+
         for (const auto& move : moves)
         {
             if (isTimeUp())
+            {
+                completedDepth = false;
                 break;
+            }
 
             GameState next = state;
             next.applyMove(move);
@@ -52,10 +66,14 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
             }
         }
 
-        if (!isTimeUp())
+        // 🔥 ONLY COMMIT IF DEPTH FULLY COMPLETED
+        if (completedDepth && !isTimeUp())
         {
             bestMove = localBest;
             bestScore = localBestScore;
+
+            lastCompletedMove = localBest;
+            lastCompletedScore = localBestScore;
         }
         else
         {
@@ -63,11 +81,11 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
         }
     }
 
-    return bestMove;
+    return lastCompletedMove;
 }
 
 // ------------------------------------------------------------
-// CORE MINIMAX (ALPHA-BETA OPTIMIZED)
+// CORE MINIMAX (ROOT-BASED FIX)
 // ------------------------------------------------------------
 
 int MinimaxStrategy::minimax(GameState state,
@@ -77,7 +95,19 @@ int MinimaxStrategy::minimax(GameState state,
                             bool maximizing,
                             int ply)
 {
-    if (depth == 0 || state.isTerminal())
+    // 🔥 FIX 1 : terminal ROOT-BASED CLEAN
+    if (state.isTerminal())
+    {
+        int win = _eval->evaluate(state);
+
+        if (win < 0)
+            return win + ply;
+
+        return win - ply;
+    }
+
+    // 🔥 FIX 2 : depth cutoff
+    if (depth == 0)
         return _eval->evaluate(state);
 
     if (isTimeUp())
@@ -87,7 +117,6 @@ int MinimaxStrategy::minimax(GameState state,
     if (moves.empty())
         return _eval->evaluate(state);
 
-    // move ordering (very important for pruning)
     std::sort(moves.begin(), moves.end(),
         [&](const AIMove& a, const AIMove& b)
         {
@@ -111,7 +140,7 @@ int MinimaxStrategy::minimax(GameState state,
             alpha = std::max(alpha, score);
 
             if (beta <= alpha)
-                break; // pruning
+                break;
         }
 
         return best;
@@ -133,29 +162,28 @@ int MinimaxStrategy::minimax(GameState state,
             beta = std::min(beta, score);
 
             if (beta <= alpha)
-                break; // pruning
+                break;
         }
 
         return best;
     }
 }
 
+
 // ------------------------------------------------------------
-// MOVE ORDERING (CRITICAL FOR STRONG PLAY)
+// MOVE ORDERING (UNCHANGED)
 // ------------------------------------------------------------
 
 int MinimaxStrategy::moveOrderingScore(const GameState& state, const AIMove& move)
 {
     int score = 0;
 
-    // center control (UTTT global + local importance)
     if (move.cellIndex == 4)
         score += 100;
 
     if (move.boardIndex == 4)
         score += 80;
 
-    // diagonal preference (strong heuristic in UTTT)
     if (move.boardIndex % 2 == 0)
         score += 20;
 
@@ -165,8 +193,9 @@ int MinimaxStrategy::moveOrderingScore(const GameState& state, const AIMove& mov
     return score;
 }
 
+
 // ------------------------------------------------------------
-// TIME MANAGEMENT
+// TIME MANAGEMENT (UNCHANGED)
 // ------------------------------------------------------------
 
 bool MinimaxStrategy::isTimeUp() const
@@ -178,4 +207,18 @@ int MinimaxStrategy::timeElapsedMs() const
 {
     auto now = std::chrono::steady_clock::now();
     return (int)std::chrono::duration_cast<std::chrono::milliseconds>(now - _start).count();
+}
+
+int MinimaxStrategy::evaluateStateForMCTS(const GameState& state, int depth)
+{
+    GameState copy = state;
+
+    return minimax(
+        copy,
+        depth,
+        -INF,
+        INF,
+        true,
+        0
+    );
 }

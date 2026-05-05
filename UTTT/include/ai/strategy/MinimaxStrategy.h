@@ -12,6 +12,7 @@ public:
 
     AIMove chooseMove(const GameState& state) override;
 
+    int evaluateStateForMCTS(const GameState& state, int depth);
 private:
     int minimax(GameState state,
                 int depth,
@@ -30,8 +31,13 @@ private:
 
     std::chrono::steady_clock::time_point _start;
 
-    int _maxTimeMs = 10000;
+    int _maxTimeMs = 2000;
 
     static constexpr int INF = 1'000'000;
     static constexpr int MAX_DEPTH = 30;
+
+    CellState _rootPlayer;
+
+    AIMove lastCompletedMove;
+    int lastCompletedScore;
 };
