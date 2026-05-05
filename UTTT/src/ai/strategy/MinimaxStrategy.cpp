@@ -11,10 +11,6 @@ MinimaxStrategy::MinimaxStrategy(std::shared_ptr<IEvaluator> eval)
 }
 
 
-// ------------------------------------------------------------
-// ROOT MOVE SELECTION
-// ------------------------------------------------------------
-
 AIMove MinimaxStrategy::chooseMove(const GameState& state)
 {
     _start = std::chrono::steady_clock::now();
@@ -66,7 +62,6 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
             }
         }
 
-        // 🔥 ONLY COMMIT IF DEPTH FULLY COMPLETED
         if (completedDepth && !isTimeUp())
         {
             bestMove = localBest;
@@ -84,10 +79,6 @@ AIMove MinimaxStrategy::chooseMove(const GameState& state)
     return lastCompletedMove;
 }
 
-// ------------------------------------------------------------
-// CORE MINIMAX (ROOT-BASED FIX)
-// ------------------------------------------------------------
-
 int MinimaxStrategy::minimax(GameState state,
                             int depth,
                             int alpha,
@@ -95,7 +86,6 @@ int MinimaxStrategy::minimax(GameState state,
                             bool maximizing,
                             int ply)
 {
-    // 🔥 FIX 1 : terminal ROOT-BASED CLEAN
     if (state.isTerminal())
     {
         int win = _eval->evaluate(state);
@@ -106,7 +96,6 @@ int MinimaxStrategy::minimax(GameState state,
         return win - ply;
     }
 
-    // 🔥 FIX 2 : depth cutoff
     if (depth == 0)
         return _eval->evaluate(state);
 
@@ -170,10 +159,6 @@ int MinimaxStrategy::minimax(GameState state,
 }
 
 
-// ------------------------------------------------------------
-// MOVE ORDERING (UNCHANGED)
-// ------------------------------------------------------------
-
 int MinimaxStrategy::moveOrderingScore(const GameState& state, const AIMove& move)
 {
     int score = 0;
@@ -192,11 +177,6 @@ int MinimaxStrategy::moveOrderingScore(const GameState& state, const AIMove& mov
 
     return score;
 }
-
-
-// ------------------------------------------------------------
-// TIME MANAGEMENT (UNCHANGED)
-// ------------------------------------------------------------
 
 bool MinimaxStrategy::isTimeUp() const
 {

@@ -12,7 +12,7 @@ int main()
 
     GameManager manager(start_timestamp);
 
-    game.initialize(100, Level::MEDIUM_2, Mode::DEBUG, false, "MyAi");
+    game.initialize(100, Level::MEDIUM_1, Mode::DEBUG, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {

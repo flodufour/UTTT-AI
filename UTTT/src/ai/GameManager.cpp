@@ -21,14 +21,9 @@ GameManager::GameManager(long long runTimestamp)
         evaluator
     );
 
-    _strategy = std::make_unique<MCTSHeuristicStrategy>(
-        evaluator,
-        minimax,
-        5000 // nombre d’itérations MCTS
+     _strategy = std::make_unique<MinimaxStrategy>(
+        std::make_unique<HeuristicEvaluator>()
     );
-    // _strategy = std::make_unique<MinimaxStrategy>(
-    //    std::make_unique<HeuristicEvaluator>()
-    //);
 }
 
 void GameManager::init(CellState mySide)
