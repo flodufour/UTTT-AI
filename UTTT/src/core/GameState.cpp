@@ -1,5 +1,7 @@
 #include "core/GameState.h"
 #include <iostream>
+#include "utils/ZobristHasher.h"
+
 
 GameState::GameState()
 {
@@ -14,6 +16,7 @@ void GameState::reset()
     _currentPlayer = CellState::X;
     _myPlayer = CellState::EMPTY;
     _opponent = CellState::EMPTY;
+
 }
 
 void GameState::setPlayers(CellState me)
@@ -87,3 +90,81 @@ CellState GameState::getWinner() const
     return _board.checkWinner();
 }
 
+GameState::MoveUndo GameState::applyMoveFast(const AIMove& move)
+{
+    MoveUndo undo;
+
+    undo.move = move;
+    undo.prevPlayer = _currentPlayer;
+    undo.prevActiveBoard = _board.getActiveBoard();
+
+    _board.playMove(move, _currentPlayer);
+
+    _currentPlayer = (_currentPlayer == CellState::X)
+                    ? CellState::O
+                    : CellState::X;
+
+    return undo;
+}
+
+void GameState::undoMove(const MoveUndo& undo)
+{
+    _board.undoMove(undo.move, undo.prevActiveBoard);
+    _currentPlayer = undo.prevPlayer;
+}
+
+uint64_t GameState::getHash() const
+{
+
+    uint64_t h = 0;
+
+    for (int b = 0; b < 9; b++)
+    {
+        for (int c = 0; c < 9; c++)
+        {
+            CellState s = _board.getBoard(b).getCell(c).getState();
+
+            if (s == CellState::X){
+
+                h ^= Zobrist::cell[b][c][0];            }
+            else if (s == CellState::O){
+
+                h ^= Zobrist::cell[b][c][1];            }
+        }
+    }
+
+    int activeBoard = _board.getActiveBoard();
+    if(activeBoard == -1){
+        activeBoard =9;
+    }
+    h ^= Zobrist::activeBoard[Zobrist::activeBoardIndex(activeBoard)];
+    h ^= Zobrist::player[(int)_currentPlayer];
+    return h;
+}
+
+int GameState::getActiveBoard() const
+{
+    return _board.getActiveBoard();
+}
+
+void GameState::setActiveBoard(int b)
+{
+    _board.setActiveBoard(b);
+}
+
+
+int GameState::applyNullMove()
+{
+    switchPlayers();
+    int active = _board.getActiveBoard();
+    setActiveBoard(-1);
+
+
+    return active;
+}
+
+void GameState::undoNullMove(int activeBoard)
+{
+    switchPlayers();
+    setActiveBoard(activeBoard);
+}

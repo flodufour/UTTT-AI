@@ -1,44 +1,16 @@
 #pragma once
-
 #include <cstdint>
-#include <array>
-#include <random>
 
-class ZobristHasher
+class Zobrist
 {
 public:
-    // ============================================================
-    // INIT
-    // ============================================================
     static void init();
 
-    // ============================================================
-    // HASH HELPERS
-    // ============================================================
-    static uint64_t hashEmpty();
+    static uint64_t cell[9][9][2];
 
-    static void togglePiece(uint64_t& hash,
-                            int board,
-                            int cell,
-                            int player);
+    static uint64_t activeBoard[10];
 
-    static void toggleTurn(uint64_t& hash);
+    static uint64_t player[2];
 
-    static void toggleActiveBoard(uint64_t& hash, int board);
-
-    // ============================================================
-    // PIECES
-    // [board][cell][player]
-    // player: 0 = X, 1 = O
-    // ============================================================
-    static std::array<std::array<std::array<uint64_t, 2>, 9>, 9> pieceTable;
-
-    // ============================================================
-    // GAME STATE KEYS
-    // ============================================================
-    static uint64_t turnKey;
-    static std::array<uint64_t, 9> activeBoardKey;
-    static uint64_t anyBoardKey;
-
-    static bool initialized;
+    static int activeBoardIndex(int b);
 };

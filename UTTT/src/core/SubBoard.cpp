@@ -72,3 +72,11 @@ bool SubBoard::isEmpty() const
     }
     return true;
 }
+
+void SubBoard::undoMove(int index)
+{
+    if (index < 0 || index >= 9)
+        return;
+
+    _cells[index].setState(CellState::EMPTY);
+}

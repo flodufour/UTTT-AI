@@ -4,7 +4,7 @@
 
 class RandomStrategy : public IStrategy {
 public:
-    AIMove chooseMove(const GameState& state) override;
+    AIMove chooseMove( GameState& state) override;
 
 private:
     HeuristicEvaluator _eval;

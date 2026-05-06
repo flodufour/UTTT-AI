@@ -2,17 +2,20 @@
 #include "main.h"
 #include "ai/GameManager.h"
 #include "utils/MoveConverter.h"
+#include "utils/ZobristHasher.h"
 #include <ctime>
 
 int main()
 {
+    Zobrist::init();
+
     long long start_timestamp = std::time(nullptr);
 
     MoveConverter converter;
 
     GameManager manager(start_timestamp);
 
-    game.initialize(100, Level::MEDIUM_2, Mode::DEBUG, false, "MyAi");
+    game.initialize(1, Level::MEDIUM_2, Mode::DEBUG, false, "MyAi");
 
     while (!game.isAllGameFinish())
     {

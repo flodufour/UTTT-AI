@@ -2,52 +2,53 @@
 
 #include "core/GameState.h"
 #include "IEvaluator.h"
+#include "core/UltimateBoard.h"
+#include "core/SubBoard.h"
 
 /// @class HeuristicEvaluator
-/// @brief Hierarchical evaluation for Ultimate Tic Tac Toe (MCTS-safe)
+/// @brief Stable hierarchical evaluator for Ultimate Tic Tac Toe
 ///
-/// Design:
-/// - SubBoard  : tactical evaluation (local patterns)
-/// - MetaBoard : strategic evaluation (win conditions on boards)
-/// - Forced    : tempo / constraint pressure
+/// Design goals:
+/// - stable scores (important for alpha-beta + TT)
+/// - proportional weighting
+/// - no extreme value explosions except true terminal wins
+/// - MCTS + minimax safe
+
 class HeuristicEvaluator : public IEvaluator
 {
 public:
-    int evaluate(const GameState& state);
+    int evaluate(const GameState& state) const override;
 
 private:
-    int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp);
-
-    int evaluateMeta(const UltimateBoard& b, CellState me, CellState opp);
-
-    int evaluateBoards(const UltimateBoard& b, CellState me, CellState opp);
-
-    int evaluateSubBoard(const SubBoard& sb, CellState me);
-
-    int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp);
-
-    int checkEndgame(const UltimateBoard& b, CellState me, CellState opp);
+    int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp, int ply) const;
+    int evaluateMeta(const UltimateBoard& b, CellState me, CellState opp) const;
+    int evaluateBoards(const UltimateBoard& b, CellState me, CellState opp) const;
+    int evaluateSubBoard(const SubBoard& sb, CellState me, CellState opp) const;
+    int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp) const;
 
 private:
-
-    struct PositionalWeights
+    struct W
     {
-        static constexpr int WIN = 100000;
+        // Global win
+        static constexpr int WIN = 10000;
 
-        static constexpr int META_THREE = 8000;
-        static constexpr int META_TWO   = 1200;
-        static constexpr int META_ONE   = 200;
+        // Meta board
+        static constexpr int META_THREE = 1200;
+        static constexpr int META_TWO   = 250;
+        static constexpr int META_ONE    = 50;
 
-        static constexpr int SUB_WIN = 500;
-        static constexpr int SUB_TWO = 40;
+        // Sub boards
+        static constexpr int SUB_WIN = 150;
+        static constexpr int SUB_TWO = 25;
+        static constexpr int SUB_ONE = 5;
 
-        static constexpr int CENTER = 25;
-        static constexpr int CORNER = 10;
+        // Positional
+        static constexpr int CENTER = 6;
+        static constexpr int CORNER = 3;
 
-        static constexpr int FORCED_GOOD = 120;
-        static constexpr int FORCED_BAD  = 180;
+        // Tempo / forcing
+        static constexpr int FORCED_BAD = 80;
     };
-
 
     int boardWeight[9] = {
         3, 4, 3,
