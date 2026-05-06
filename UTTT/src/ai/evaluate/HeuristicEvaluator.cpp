@@ -1,172 +1,127 @@
 #include "ai/evaluate/HeuristicEvaluator.h"
-#include "core/WinPatterns.h"
 #include <algorithm>
 
-
-int HeuristicEvaluator::evaluate(const GameState& state)
+int HeuristicEvaluator::evaluate(const GameState& state) const
 {
-    const auto& b = state.getBoard();
+    const UltimateBoard& b = state.getBoard();
 
-    CellState me = state.getMyPlayer();
-    CellState opp = state.getOpponent();
+    CellState me  = state.getCurrentPlayer();
+    CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
 
-    int terminal = evaluateTerminal(b, me, opp);
+
+    int terminal = evaluateTerminal(b, me, opp, 0);
     if (terminal != 0)
         return terminal;
 
+
     int score = 0;
 
-    score += evaluateMeta(b, me, opp) * 4;
-    score += evaluateBoards(b, me, opp) * 2;
+    score += evaluateMeta(b, me, opp);
+    score += evaluateBoards(b, me, opp);
     score += evaluateForcedMove(b, me, opp);
 
-    return std::clamp(score, -100000, 100000);
+    return score;
 }
 
+int HeuristicEvaluator::evaluateTerminal(const UltimateBoard& b,
+                                         CellState me,
+                                         CellState opp,
+                                         int /*ply*/) const
+{
+    CellState winner = b.checkWinner();
 
-int HeuristicEvaluator::evaluateMeta(const UltimateBoard& b, CellState me, CellState opp)
+    if (winner == me)
+        return W::WIN;
+
+    if (winner == opp)
+        return -W::WIN;
+
+    return 0;
+}
+
+int HeuristicEvaluator::evaluateMeta(const UltimateBoard& b,
+                                     CellState me,
+                                     CellState opp) const
 {
     int score = 0;
 
-    for (const auto& line : WIN_LINES)
+    auto lineScore = [&](CellState c)
     {
-        int meCount = 0, oppCount = 0;
+        if (c == me)  return W::META_TWO;
+        if (c == opp) return -W::META_TWO;
+        return 0;
+    };
 
-        for (int i : line)
-        {
-            CellState s = b.getBoard(i).checkWinner();
-
-            if (s == me) meCount++;
-            else if (s == opp) oppCount++;
-        }
-
-        if (meCount == 3) return PositionalWeights::WIN;
-        if (oppCount == 3) return -PositionalWeights::WIN;
-
-        if (meCount == 2 && oppCount == 0)
-            score += PositionalWeights::META_TWO;
-
-        if (oppCount == 2 && meCount == 0)
-            score -= PositionalWeights::META_TWO;
-
-        if (meCount == 1 && oppCount == 0)
-            score += PositionalWeights::META_ONE;
-
-        if (oppCount == 1 && meCount == 0)
-            score -= PositionalWeights::META_ONE;
+    for (int i = 0; i < 9; i++)
+    {
+        CellState owner = b.getBoard(i).checkWinner();
+        score += lineScore(owner);
     }
 
     return score;
 }
 
-
-int HeuristicEvaluator::evaluateBoards(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateBoards(const UltimateBoard& b,
+                                       CellState me,
+                                       CellState opp) const
 {
     int score = 0;
 
     for (int i = 0; i < 9; i++)
     {
-        const auto& sb = b.getBoard(i);
-
-        CellState w = sb.checkWinner();
-
-        if (w == me)
-            score += PositionalWeights::SUB_WIN;
-
-        else if (w == opp)
-            score -= PositionalWeights::SUB_WIN;
-
-        else
-            score += evaluateSubBoard(sb, me);
+        score += evaluateSubBoard(b.getBoard(i), me, opp);
     }
 
     return score;
 }
 
-
-int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb, CellState me)
+int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb,
+                                         CellState me,
+                                         CellState opp) const
 {
     int score = 0;
 
-    CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
+    auto center = sb.getCell(4).getState();
 
-    if (sb.getCell(4).getState() == me)
-        score += PositionalWeights::CENTER;
+    if (center == me)  score += W::CENTER;
+    if (center == opp) score -= W::CENTER;
 
-    if (sb.getCell(4).getState() == opp)
-        score -= PositionalWeights::CENTER;
+    static const int corners[4] = {0, 2, 6, 8};
 
-    int corners[4] = {0, 2, 6, 8};
-
-    for (int i : corners)
+    for (int i = 0; i < 4; i++)
     {
-        if (sb.getCell(i).getState() == me)
-            score += PositionalWeights::CORNER;
+        auto c = sb.getCell(corners[i]).getState();
 
-        if (sb.getCell(i).getState() == opp)
-            score -= PositionalWeights::CORNER;
+        if (c == me)
+            score += W::CORNER;
+        else if (c == opp)
+            score -= W::CORNER;
     }
 
-    for (const auto& line : WIN_LINES)
-    {
-        int meCount = 0, oppCount = 0, empty = 0;
+    CellState w = sb.checkWinner();
 
-        for (int i : line)
-        {
-            CellState s = sb.getCell(i).getState();
-
-            if (s == me) meCount++;
-            else if (s == opp) oppCount++;
-            else empty++;
-        }
-
-        if (meCount == 2 && empty == 1)
-            score += PositionalWeights::SUB_TWO;
-
-        if (oppCount == 2 && empty == 1)
-            score -= PositionalWeights::SUB_TWO;
-    }
+    if (w == me)  score += W::SUB_WIN;
+    if (w == opp) score -= W::SUB_WIN;
 
     return score;
 }
 
-
-int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp)
+int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
+                                            CellState me,
+                                            CellState opp) const
 {
     int active = b.getActiveBoard();
 
-    if (active == -1)
-        return 0;
+    if (active >= 0 && active < 9)
+    {
+        const SubBoard& sb = b.getBoard(active);
 
-    const SubBoard& sb = b.getBoard(active);
+        if (sb.checkWinner() == me)
+            return 20;
 
-    if (!sb.isPlayable())
-        return 0;
+        if (sb.checkWinner() == opp)
+            return -20;
+    }
 
-    int myPotential  = evaluateSubBoard(sb, me);
-    int oppPotential  = evaluateSubBoard(sb, opp);
-
-    int score = (myPotential - oppPotential);
-
-    if (oppPotential > PositionalWeights::SUB_TWO * 2)
-        score -= PositionalWeights::FORCED_BAD;
-
-    return score;
-}
-
-
-int HeuristicEvaluator::evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp)
-{
-    CellState w = b.checkWinner();
-
-    if (w == me) return PositionalWeights::WIN;
-    if (w == opp) return -PositionalWeights::WIN;
-
-    return 0;
-}
-
-
-int HeuristicEvaluator::checkEndgame(const UltimateBoard& b, CellState me, CellState opp)
-{
     return 0;
 }

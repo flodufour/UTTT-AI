@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 
-AIMove RandomStrategy::chooseMove(const GameState& state)
+AIMove RandomStrategy::chooseMove( GameState& state)
 {
     auto moves = state.getValidMoves();
 

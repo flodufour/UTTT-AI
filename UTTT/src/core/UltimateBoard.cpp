@@ -70,6 +70,28 @@ CellState UltimateBoard::checkWinner() const {
             return a;
     }
 
+    if (!isFull())
+        return CellState::EMPTY;
+
+    int x = 0;
+    int o = 0;
+
+    for (int i = 0; i < 9; i++)
+    {
+        CellState w = _boards[i].checkWinner();
+
+        if (w == CellState::X)
+            x++;
+        else if (w == CellState::O)
+            o++;
+    }
+
+    if (x > o)
+        return CellState::X;
+
+    if (o > x)
+        return CellState::O;
+
     return CellState::EMPTY;
 }
 
@@ -102,5 +124,23 @@ bool UltimateBoard::isEmpty() const
     }
     return true;
 }
+
+void UltimateBoard::undoMove(const AIMove& move, int prevActiveBoard)
+{
+    _boards[move.boardIndex].undoMove(move.cellIndex);
+    _activeBoard = prevActiveBoard;
+}
+
+void UltimateBoard::setActiveBoard(int index)
+{
+    if (index < -1 || index > 8)
+    {
+        _activeBoard = -1;
+        return;
+    }
+
+    _activeBoard = index;
+}
+
 
 

@@ -4,6 +4,8 @@
 #include "main.h"
 #include <vector>
 #include <stack>
+#include <cstdint>
+
 
 /// @class GameState
 /// @brief Represents the full state of an Ultimate Tic Tac Toe game.
@@ -23,6 +25,14 @@ private:
     CellState _currentPlayer;
 
 public:
+    struct MoveUndo
+    {
+        AIMove move;
+        CellState prevPlayer;
+        int prevActiveBoard;
+        uint64_t prevHash;
+    };
+
 
      /// @brief Constructs a new game state.
     GameState();
@@ -64,6 +74,17 @@ public:
     /// @brief Gets the winner of the game.
     /// @return Winning player or EMPTY if no winner.
     CellState getWinner() const;
+
+    MoveUndo applyMoveFast(const AIMove& move);
+    void undoMove(const MoveUndo& undo);
+
+    uint64_t getHash() const;
+
+    int getActiveBoard() const;
+    void setActiveBoard(int);
+
+    int applyNullMove();
+    void undoNullMove(int activeBoard);
 
 
 

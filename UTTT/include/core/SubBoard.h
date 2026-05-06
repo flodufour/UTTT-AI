@@ -49,4 +49,6 @@ public:
     bool isEmpty() const;
 
 
+    void undoMove(int index);
+
 };

@@ -63,4 +63,10 @@ public:
     /// @return True if no moves have been played.
     bool isEmpty() const;
 
+    void undoMove(const AIMove& move, int prevActiveBoard);
+
+    void setActiveBoard(int index);
+
+
+
 };

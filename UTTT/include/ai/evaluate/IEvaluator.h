@@ -2,19 +2,24 @@
 #include "core/GameState.h"
 
 /// @interface IEvaluator
-/// @brief Interface for game state evaluation
+/// @brief Engine-safe evaluation interface (stateless)
 ///
-/// Defines a contract for evaluating a GameState and returning
-/// a numerical score representing the position quality.
+/// Contract:
+/// - MUST NOT modify GameState
+/// - MUST be deterministic
+/// - MUST be side-effect free
+///
+/// Convention:
+/// - positive = good for current player
+/// - negative = good for opponent
 
 class IEvaluator {
 public:
 
-    /// @brief Evaluates the given game state
-    /// @param state current game state
-    /// @return evaluation score (higher = better position)
+    /// @brief Evaluate a game state (read-only)
+    /// @param state current game state (MUST NOT be modified)
+    /// @return heuristic score (relative to current player)
+    virtual int evaluate(const GameState& state) const = 0;
 
-    virtual int evaluate(const GameState& state) = 0 ;
     virtual ~IEvaluator() = default;
-
 };

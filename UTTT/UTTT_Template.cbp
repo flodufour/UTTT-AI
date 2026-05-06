@@ -31,6 +31,11 @@
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
 			</Target>
+			<Target title="NEW">
+				<Option output="UTTT_Template" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -48,10 +53,22 @@
 		<Unit filename="include/ai/evaluate/HeuristicEvaluator.h" />
 		<Unit filename="include/ai/evaluate/IEvaluator.h" />
 		<Unit filename="include/ai/strategy/IStrategy.h" />
-		<Unit filename="include/ai/strategy/MCTSStrategy.h" />
+		<Unit filename="include/ai/strategy/MCTSStrategy.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
 		<Unit filename="include/ai/strategy/MinimaxStrategy.h" />
-		<Unit filename="include/ai/strategy/RandomStrategy.h" />
-		<Unit filename="include/ai/strategy/SimpleStrategy.h" />
+		<Unit filename="include/ai/strategy/RandomStrategy.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
+		<Unit filename="include/ai/strategy/SimpleStrategy.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
 		<Unit filename="include/ai/training/DataLogger.h" />
 		<Unit filename="include/ai/training/MatchRunner.h" />
 		<Unit filename="include/core/AIMove.h" />
@@ -62,12 +79,25 @@
 		<Unit filename="include/core/WinPatterns.h" />
 		<Unit filename="include/main.h" />
 		<Unit filename="include/utils/MoveConverter.h" />
+		<Unit filename="include/utils/ZobristHasher.h" />
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/HeuristicEvaluator.cpp" />
-		<Unit filename="src/ai/strategy/MCTSStrategy.cpp" />
+		<Unit filename="src/ai/strategy/MCTSStrategy.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
 		<Unit filename="src/ai/strategy/MinimaxStrategy.cpp" />
-		<Unit filename="src/ai/strategy/RandomStrategy.cpp" />
-		<Unit filename="src/ai/strategy/SimpleStrategy.cpp" />
+		<Unit filename="src/ai/strategy/RandomStrategy.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
+		<Unit filename="src/ai/strategy/SimpleStrategy.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Training" />
+		</Unit>
 		<Unit filename="src/ai/training/DataLogger.cpp" />
 		<Unit filename="src/ai/training/MatchRunner.cpp" />
 		<Unit filename="src/ai/training/TrainingMain.cpp">
@@ -77,8 +107,13 @@
 		<Unit filename="src/core/GameState.cpp" />
 		<Unit filename="src/core/SubBoard.cpp" />
 		<Unit filename="src/core/UltimateBoard.cpp" />
-		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="NEW" />
+		</Unit>
 		<Unit filename="src/utils/MoveConverter.cpp" />
+		<Unit filename="src/utils/ZobristHasher.cpp" />
 		<Unit filename="version.h" />
 		<Extensions>
 			<AutoVersioning>
