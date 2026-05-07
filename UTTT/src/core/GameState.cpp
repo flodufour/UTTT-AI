@@ -168,3 +168,7 @@ void GameState::undoNullMove(int activeBoard)
     switchPlayers();
     setActiveBoard(activeBoard);
 }
+
+int GameState::getMovesLeft() const{
+    return _board.getMovesLeftBoard();
+}

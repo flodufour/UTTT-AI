@@ -4,6 +4,7 @@
 #include "main.h"
 #include "ai/strategy/IStrategy.h"
 #include "ai/training/DataLogger.h"
+#include "ai/evaluate/IEvaluator.h"
 #include <memory>
 
 class GameManager
@@ -17,6 +18,7 @@ private:
     GameState _state;
     CellState _me;
     CellState _opponent;
+    std::unique_ptr<IEvaluator> _evaluator;
     std::unique_ptr<IStrategy> _strategy;
     std::unique_ptr<DataLogger> _logger;
 
