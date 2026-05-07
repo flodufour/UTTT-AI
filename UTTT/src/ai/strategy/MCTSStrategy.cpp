@@ -245,9 +245,7 @@ void MCTSStrategy::backpropagate(Node* node, double result)
     while (node)
     {
         node->visits++;
-
         node->value += result;
-
         node = node->parent;
     }
 }

@@ -95,12 +95,13 @@ GameState::MoveUndo GameState::applyMoveFast(const AIMove& move)
     MoveUndo undo;
 
     undo.move = move;
-    undo.prevPlayer = _currentPlayer;
     undo.prevActiveBoard = _board.getActiveBoard();
 
     if(!_board.playMove(move, _currentPlayer)){
         undo.move = {-1, -1};
     }
+
+    switchPlayers();
 
     return undo;
 }
@@ -108,7 +109,8 @@ GameState::MoveUndo GameState::applyMoveFast(const AIMove& move)
 void GameState::undoMove(const MoveUndo& undo)
 {
     _board.undoMove(undo.move, undo.prevActiveBoard);
-    _currentPlayer = undo.prevPlayer;
+    switchPlayers();
+
 }
 
 uint64_t GameState::getHash() const
@@ -145,26 +147,25 @@ int GameState::getActiveBoard() const
     return _board.getActiveBoard();
 }
 
-void GameState::setActiveBoard(int b)
-{
-    _board.setActiveBoard(b);
-}
-
 
 int GameState::applyNullMove()
 {
     switchPlayers();
     int active = _board.getActiveBoard();
-    setActiveBoard(-1);
+    _board.updateActiveBoard(-1);
 
 
     return active;
 }
 
-void GameState::undoNullMove(int activeBoard)
+bool GameState::undoNullMove(int activeBoard)
 {
-    switchPlayers();
-    setActiveBoard(activeBoard);
+    if(activeBoard > -2 && activeBoard < 9){
+        switchPlayers();
+        _board.updateActiveBoard(activeBoard);
+        return true;
+    }
+    return false;
 }
 
 int GameState::getMovesLeft() const{

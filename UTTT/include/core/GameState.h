@@ -28,7 +28,6 @@ public:
     struct MoveUndo
     {
         AIMove move;
-        CellState prevPlayer;
         int prevActiveBoard;
         uint64_t prevHash;
     };
@@ -81,10 +80,9 @@ public:
     uint64_t getHash() const;
 
     int getActiveBoard() const;
-    void setActiveBoard(int);
 
     int applyNullMove();
-    void undoNullMove(int activeBoard);
+    bool undoNullMove(int activeBoard);
 
     int getMovesLeft() const;
 

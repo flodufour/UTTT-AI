@@ -75,7 +75,6 @@ private:
 
     AIMove selectRolloutMove(GameState& state);
 
-
     IEvaluator* _evaluator;
 
     int _iterations;
