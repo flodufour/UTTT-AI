@@ -17,24 +17,32 @@ MCTSStrategy::MCTSStrategy(IEvaluator* evaluator,
 
 AIMove MCTSStrategy::chooseMove(GameState& rootState)
 {
+    // creation of the tree
     Node root(rootState);
 
+    // simulation of _iterations games
     for (int i = 0; i < _iterations; i++)
     {
+        // selection of the most promising node
         Node* node = select(&root);
 
+        // if the node has sub-nodes, we explore them
         if (!node->state.isTerminal() && !node->untriedMoves.empty())
         {
             node = expand(node);
         }
 
+        // play the game from the selected start node. result is in [-1,1]
         double result = simulate(node->state);
+
+        // we climb the tree from the bottom and update stats
         backpropagate(node, result);
     }
 
     Node* best = nullptr;
     int bestVisits = -1;
 
+    // we get the most visited move
     for (auto& child : root.children)
     {
         if (child->visits > bestVisits)
@@ -49,8 +57,10 @@ AIMove MCTSStrategy::chooseMove(GameState& rootState)
 
 MCTSStrategy::Node* MCTSStrategy::select(Node* node)
 {
+
     while (!node->state.isTerminal())
     {
+        //  test all moves of the node
         if (!node->untriedMoves.empty())
             return node;
 
@@ -60,6 +70,7 @@ MCTSStrategy::Node* MCTSStrategy::select(Node* node)
         Node* best = nullptr;
         double bestScore = -std::numeric_limits<double>::infinity();
 
+        // choose the best scored children
         for (auto& child : node->children)
         {
             double score = uctValue(child.get(), node);
@@ -85,12 +96,13 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
     if (node->untriedMoves.empty())
         return node;
 
+    // get one random move
     static thread_local std::mt19937 rng(std::random_device{}());
     std::uniform_int_distribution<int> dist(0, (int)node->untriedMoves.size() - 1);
-
     int idx = dist(rng);
-    AIMove move = node->untriedMoves[idx];
 
+    AIMove move = node->untriedMoves[idx];
+    // remove the node from the untried list
     node->untriedMoves.erase(node->untriedMoves.begin() + idx);
 
     GameState nextState = node->state;

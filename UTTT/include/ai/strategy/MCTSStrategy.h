@@ -14,6 +14,7 @@
 class MCTSStrategy : public IStrategy
 {
 public:
+
     MCTSStrategy(IEvaluator* evaluator,
                  int iterations = 10000,
                  double exploration = 1.4);
@@ -21,10 +22,15 @@ public:
     AIMove chooseMove(GameState& state) override;
 
 private:
+
     struct TTEntry
     {
-        double value = 0.0;
-        int visits = 0;
+        double value;
+        int visits;
+        int depth;
+        AIMove bestMove;
+        double bestScore;
+        double heuristic;
     };
 
     struct Node
@@ -56,22 +62,26 @@ private:
         }
     };
 
-private:
     Node* select(Node* node);
     Node* expand(Node* node);
+
     double simulate(GameState state);
+
     void backpropagate(Node* node, double result);
 
     double uctValue(Node* node, Node* parent) const;
 
     uint64_t getHash(const GameState& state) const;
 
+    AIMove selectRolloutMove(GameState& state);
+
+
     IEvaluator* _evaluator;
 
     int _iterations;
+
     double _exploration;
 
     std::unordered_map<uint64_t, TTEntry> _tt;
-    AIMove selectRolloutMove(GameState& state);
 
 };
