@@ -26,6 +26,7 @@ private:
     int evaluateSubBoard(const SubBoard& sb, CellState me, CellState opp) const;
     int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp) const;
 
+
 private:
     struct W
     {

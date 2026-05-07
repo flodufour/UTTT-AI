@@ -98,11 +98,9 @@ GameState::MoveUndo GameState::applyMoveFast(const AIMove& move)
     undo.prevPlayer = _currentPlayer;
     undo.prevActiveBoard = _board.getActiveBoard();
 
-    _board.playMove(move, _currentPlayer);
-
-    _currentPlayer = (_currentPlayer == CellState::X)
-                    ? CellState::O
-                    : CellState::X;
+    if(!_board.playMove(move, _currentPlayer)){
+        undo.move = {-1, -1};
+    }
 
     return undo;
 }

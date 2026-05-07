@@ -200,14 +200,16 @@ AIMove MCTSStrategy::selectRolloutMove(GameState& state)
 
     for (const auto& move : moves)
     {
-        GameState tmp = state;
-        if (!tmp.applyMove(move))
+        auto undo = state.applyMoveFast(move);
+
+        if (undo.move.boardIndex == -1 && undo.move.cellIndex == -1)
             continue;
 
-            int score = _evaluator->evaluate(tmp);
-
+        int score = _evaluator->evaluate(state);
 
         scored.push_back({move, score});
+
+        state.undoMove(undo);
     }
 
     if (scored.empty())
