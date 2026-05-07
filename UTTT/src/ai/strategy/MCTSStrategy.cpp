@@ -97,25 +97,61 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
     if (node->untriedMoves.empty())
         return node;
 
-    // get one random move
     static thread_local std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(0, (int)node->untriedMoves.size() - 1);
-    int idx = dist(rng);
 
-    AIMove move = node->untriedMoves[idx];
+    int K = std::min(5, (int)node->untriedMoves.size());
 
-    // remove the node from the untried list
-    node->untriedMoves.erase(node->untriedMoves.begin() + idx);
+    std::uniform_int_distribution<int> dist(0, node->untriedMoves.size() - 1);
 
-    // each move gets it's own state
-    GameState nextState = node->state;
+    AIMove bestMove;
+    int bestScore = std::numeric_limits<int>::min();
 
-    if (!nextState.applyMove(move))
+    std::vector<int> used;
+    used.reserve(K);
+
+    // sample K unique moves
+    for (int i = 0; i < K; i++)
+    {
+        int idx;
+        do {
+            idx = dist(rng);
+        } while (std::find(used.begin(), used.end(), idx) != used.end());
+
+        used.push_back(idx);
+
+        AIMove move = node->untriedMoves[idx];
+
+        GameState tmp = node->state;
+        if (!tmp.applyMove(move))
+            continue;
+
+        int score = _evaluator->evaluate(tmp);
+
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestMove = move;
+        }
+    }
+
+    // remove chosen move from untried list
+    auto it = std::find(node->untriedMoves.begin(),
+                         node->untriedMoves.end(),
+                         bestMove);
+
+    if (it == node->untriedMoves.end())
         return node;
 
-    // added to the children list
+    node->untriedMoves.erase(it);
+
+    // create child node
+    GameState nextState = node->state;
+
+    if (!nextState.applyMove(bestMove))
+        return node;
+
     node->children.push_back(
-        std::make_unique<Node>(nextState, node, move)
+        std::make_unique<Node>(nextState, node, bestMove)
     );
 
     return node->children.back().get();

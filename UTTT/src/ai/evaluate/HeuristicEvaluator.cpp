@@ -1,4 +1,5 @@
 #include "ai/evaluate/HeuristicEvaluator.h"
+#include "core/WinPatterns.h"
 #include <algorithm>
 
 int HeuristicEvaluator::evaluate(const GameState& state) const

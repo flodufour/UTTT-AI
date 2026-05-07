@@ -15,7 +15,7 @@ class MCTSStrategy : public IStrategy
 public:
 
     MCTSStrategy(IEvaluator* evaluator,
-                 int iterations = 10000,
+                 int iterations = 20000,
                  double exploration = 1.4);
 
     AIMove chooseMove(GameState& state) override;
