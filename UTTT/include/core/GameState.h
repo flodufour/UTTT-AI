@@ -86,6 +86,8 @@ public:
     int applyNullMove();
     void undoNullMove(int activeBoard);
 
+    int getMovesLeft() const;
+
 
 
 };

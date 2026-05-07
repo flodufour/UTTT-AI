@@ -142,5 +142,19 @@ void UltimateBoard::setActiveBoard(int index)
     _activeBoard = index;
 }
 
+int UltimateBoard::getMovesLeftBoard() const{
+    int co = 0;
+for (int i = 0;i<9;i++)
+{
+    for (int j = 0; j<9;j++){
+        if(_boards[i].getCell(i).getState() == CellState::EMPTY){
+            co++;
+        }
+    }
+
+}
+
+return co;
+}
 
 

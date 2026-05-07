@@ -15,16 +15,16 @@ GameManager::GameManager(long long runTimestamp)
 {
     _runTimestamp = runTimestamp;
 
-    auto evaluator = std::make_shared<HeuristicEvaluator>();
+    _evaluator = std::make_unique<HeuristicEvaluator>();
 
-    auto minimax = std::make_shared<MinimaxStrategy>(
-        evaluator
+    _strategy = std::make_unique<MCTSStrategy>(
+        _evaluator.get(),   // important
+        10000,               // iterations
+        1.5               // exploration constant (UCT)
     );
 
-     _strategy = std::make_unique<MinimaxStrategy>(
-        std::make_unique<HeuristicEvaluator>()
-    );
-}
+
+ }
 
 void GameManager::init(CellState mySide)
 {

@@ -5,7 +5,7 @@ int HeuristicEvaluator::evaluate(const GameState& state) const
 {
     const UltimateBoard& b = state.getBoard();
 
-    CellState me  = state.getCurrentPlayer();
+    CellState me  = state.getMyPlayer();
     CellState opp = (me == CellState::X) ? CellState::O : CellState::X;
 
 
@@ -125,3 +125,4 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
 
     return 0;
 }
+
