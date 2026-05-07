@@ -107,11 +107,13 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
     // remove the node from the untried list
     node->untriedMoves.erase(node->untriedMoves.begin() + idx);
 
+    // each move gets it's own state
     GameState nextState = node->state;
 
     if (!nextState.applyMove(move))
         return node;
 
+    // added to the children list
     node->children.push_back(
         std::make_unique<Node>(nextState, node, move)
     );
@@ -121,23 +123,19 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
 
 double MCTSStrategy::simulate(GameState state)
 {
+    // gets the root player (our ai)
     CellState rootPlayer = state.getMyPlayer();
-    int depth = 0;
+
     int movesLeft = state.getMovesLeft();
 
-    int maxDepth;
-
-    if (movesLeft > 60)
-        maxDepth = 20;
-    else if (movesLeft > 40)
-        maxDepth = 25;
-    else if (movesLeft > 20)
-        maxDepth = 30;
-    else
-        maxDepth = 35;
+    // smooth depth scaling
+    int maxDepth = 20 + std::log(100 - movesLeft + 1) * 5;
 
     static thread_local std::mt19937 rng(std::random_device{}());
 
+    int depth = 0;
+
+    // simulates the game by applying move after move
     while (!state.isTerminal() && depth < maxDepth)
     {
         auto moves = state.getValidMoves();
@@ -163,6 +161,8 @@ double MCTSStrategy::simulate(GameState state)
         depth++;
     }
 
+    // returns reward depending on the winner
+
     CellState winner = state.getWinner();
 
     if (winner == rootPlayer)
@@ -183,6 +183,7 @@ double MCTSStrategy::uctValue(Node* node, Node* parent) const
     double exploitation = node->value / node->visits;
 
     double c;
+
     if (parent->visits < 1000)
         c = 2.5;
     else if (parent->visits < 5000)
@@ -252,3 +253,4 @@ void MCTSStrategy::backpropagate(Node* node, double result)
         node = node->parent;
     }
 }
+
