@@ -67,7 +67,6 @@ public:
 
     void setActiveBoard(int index);
 
-
     int getMovesLeftBoard() const;
 
 

@@ -51,6 +51,6 @@ public:
 
     void undoMove(int index);
 
-    int getMovesLetft() const;
+    int getMovesLetftSubBoard() const;
 
 };

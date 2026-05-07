@@ -66,7 +66,6 @@ private:
 
     uint64_t getHash(const GameState& state) const;
 
-private:
     IEvaluator* _evaluator;
 
     int _iterations;
