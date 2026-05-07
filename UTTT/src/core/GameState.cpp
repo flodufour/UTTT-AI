@@ -90,7 +90,7 @@ CellState GameState::getWinner() const
     return _board.checkWinner();
 }
 
-GameState::MoveUndo GameState::applyMoveFast(const AIMove& move)
+MoveUndo GameState::applyMoveFast(const AIMove& move)
 {
     MoveUndo undo;
 

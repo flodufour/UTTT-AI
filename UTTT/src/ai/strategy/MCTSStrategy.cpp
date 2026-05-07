@@ -17,6 +17,7 @@ MCTSStrategy::MCTSStrategy(IEvaluator* evaluator,
 
 AIMove MCTSStrategy::chooseMove(GameState& rootState)
 {
+
     // creation of the tree
     Node root(rootState);
 
@@ -102,6 +103,7 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
     int idx = dist(rng);
 
     AIMove move = node->untriedMoves[idx];
+
     // remove the node from the untried list
     node->untriedMoves.erase(node->untriedMoves.begin() + idx);
 
@@ -124,6 +126,7 @@ double MCTSStrategy::simulate(GameState state)
     int movesLeft = state.getMovesLeft();
 
     int maxDepth;
+
     if (movesLeft > 60)
         maxDepth = 20;
     else if (movesLeft > 40)

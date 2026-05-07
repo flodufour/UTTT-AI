@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/UltimateBoard.h"
+#include "utils/MoveUndo.h"
 #include "main.h"
 #include <vector>
 #include <stack>
@@ -25,13 +26,6 @@ private:
     CellState _currentPlayer;
 
 public:
-    struct MoveUndo
-    {
-        AIMove move;
-        int prevActiveBoard;
-        uint64_t prevHash;
-    };
-
 
      /// @brief Constructs a new game state.
     GameState();
