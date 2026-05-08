@@ -203,20 +203,89 @@ int HeuristicEvaluator::evaluateSubBoard(const SubBoard& sb,
 }
 
 int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
-                                            CellState me,
-                                            CellState opp) const
+                                           CellState me,
+                                           CellState opp) const
 {
+    int score = 0;
     int boardIndex = b.getActiveBoard();
 
     if (boardIndex == -1)
-        return W::FREE_MOVE;
+    {
+        std::vector<std::pair<int, int>> candidates;
+
+        for (int j = 0; j < 9; j++)
+        {
+            const SubBoard& sb = b.getBoard(j);
+
+            if (sb.checkWinner() != CellState::EMPTY || sb.isFull())
+                continue;
+
+            int importance = evaluateMetaImportance(b, j, me, opp);
+            candidates.push_back({importance, j});
+        }
+
+        if (candidates.empty())
+            return 0;
+
+        std::sort(candidates.begin(), candidates.end(),
+                  [](const auto& a, const auto& b)
+                  {
+                      return a.first > b.first;
+                  });
+
+        int limit = std::min(2, (int)candidates.size());
+
+        for (int i = 0; i < limit; i++)
+        {
+            int j = candidates[i].second;
+            const SubBoard& sb = b.getBoard(j);
+
+            score -= evaluateMetaImportance(b, j, me, opp);
+
+            for (const auto& line : WIN_LINES)
+            {
+                int myCount = 0;
+                int oppCount = 0;
+                int emptyCount = 0;
+
+                for (int k = 0; k < 3; k++)
+                {
+                    CellState owner = sb.getCell(line[k]).getState();
+
+                    if (owner == me)
+                        myCount++;
+                    else if (owner == opp)
+                        oppCount++;
+                    else
+                        emptyCount++;
+                }
+
+                if (myCount > 0 && oppCount > 0)
+                    continue;
+
+                if (myCount == 2 && emptyCount == 1)
+                    score += W::FORCED_GOOD;
+                else if (myCount == 1 && emptyCount == 2)
+                    score += W::FORCED_VERY_GOOD;
+
+                if (oppCount == 2 && emptyCount == 1)
+                    score += W::FORCED_VERY_BAD;
+                else if (oppCount == 1 && emptyCount == 2)
+                    score += W::FORCED_BAD;
+            }
+
+            score += boardWeight[j] * 3;
+        }
+
+        return score + W::FREE_MOVE;
+    }
 
     const SubBoard& sb = b.getBoard(boardIndex);
 
     if (sb.checkWinner() != CellState::EMPTY || sb.isFull())
         return W::FREE_MOVE;
 
-    int score = 0;
+    score -= evaluateMetaImportance(b, boardIndex, me, opp);
 
     for (const auto& line : WIN_LINES)
     {
@@ -250,8 +319,66 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
             score -= W::FORCED_BAD;
     }
 
-    score += boardWeight[boardIndex] * 3;
+    score += (score >0 ) ? boardWeight[boardIndex] * 3 : -boardWeight[boardIndex] * 3;
 
     return score;
 }
 
+int HeuristicEvaluator::evaluateMetaImportance(
+    const UltimateBoard& b,
+    int boardIndex,
+    CellState me,
+    CellState opp) const
+{
+    const SubBoard& sb = b.getBoard(boardIndex);
+
+    if (sb.checkWinner() != CellState::EMPTY || sb.isFull())
+        return 0;
+
+    int score = 0;
+
+    for (const auto& line : WIN_LINES)
+    {
+        bool containsBoard = false;
+
+        for (int idx : line)
+        {
+            if (idx == boardIndex)
+            {
+                containsBoard = true;
+                break;
+            }
+        }
+
+        if (!containsBoard)
+            continue;
+
+        int myCount = 0;
+        int oppCount = 0;
+
+        for (int idx : line)
+        {
+            if (idx == boardIndex)
+                continue;
+
+            CellState owner = b.getBoard(idx).checkWinner();
+
+            if (owner == me)
+                myCount++;
+            else if (owner == opp)
+                oppCount++;
+        }
+
+        if (myCount == 2)
+            score += 200;
+        else if (myCount == 1)
+            score += -200;
+
+        if (oppCount == 2)
+            score += 900;
+        else if (oppCount == 1)
+            score += 500;
+    }
+
+    return score;
+}

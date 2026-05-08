@@ -25,6 +25,11 @@ private:
     int evaluateBoards(const UltimateBoard& b, CellState me, CellState opp) const;
     int evaluateSubBoard(const SubBoard& sb, CellState me, CellState opp) const;
     int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp) const;
+    int evaluateMetaImportance(
+    const UltimateBoard& b,
+    int boardIndex,
+    CellState me,
+    CellState opp) const;
 
 
 private:
@@ -47,10 +52,10 @@ private:
         static constexpr int CORNER = 3;
 
         // Tempo / forcing
-        static constexpr int FORCED_GOOD = 10;
-        static constexpr int FORCED_VERY_GOOD = 15;
-        static constexpr int FORCED_BAD = -15;
-        static constexpr int FORCED_VERY_BAD = -25;
+        static constexpr int FORCED_GOOD = 30;
+        static constexpr int FORCED_VERY_GOOD = 120;
+        static constexpr int FORCED_BAD = -150;
+        static constexpr int FORCED_VERY_BAD = -200;
 
         static constexpr int FREE_MOVE = -40;
     };

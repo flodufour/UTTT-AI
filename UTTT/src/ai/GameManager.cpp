@@ -17,11 +17,15 @@ GameManager::GameManager(long long runTimestamp)
 
     _evaluator = std::make_unique<HeuristicEvaluator>();
 
-    _strategy = std::make_unique<MCTSStrategy>(
-        _evaluator.get(),   // important
-        2000,               // iterations
-        1.4               // exploration constant (UCT)
-    );
+    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 5);
+
+    //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
+
+//    _strategy = std::make_unique<MCTSStrategy>(
+//        _evaluator.get(),   // important
+//        2000,               // iterations
+//        1.4               // exploration constant (UCT)
+//    );
 
 
  }

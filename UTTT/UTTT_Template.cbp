@@ -79,6 +79,7 @@
 		<Unit filename="include/core/WinPatterns.h" />
 		<Unit filename="include/main.h" />
 		<Unit filename="include/utils/MoveConverter.h" />
+		<Unit filename="include/utils/MoveUndo.h" />
 		<Unit filename="include/utils/ZobristHasher.h" />
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/HeuristicEvaluator.cpp" />
