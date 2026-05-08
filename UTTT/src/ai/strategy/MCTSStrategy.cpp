@@ -180,16 +180,25 @@ double MCTSStrategy::simulate(GameState state)
 
         AIMove move;
 
-        std::uniform_int_distribution<int> prob(0, 9);
-        if (prob(rng) < 8)
+        // noise reduction
+        if (state.getMovesLeft() <= 12)
         {
-            move = selectRolloutMove(state);
+            move = selectRolloutMove(state); // no randomness anymore
         }
-        else
-        {
-            std::uniform_int_distribution<int> dist(0, (int)moves.size() - 1);
-            move = moves[dist(rng)];
+        else {
+            std::uniform_int_distribution<int> prob(0, 9);
+            if (prob(rng) < 8)
+            {
+                move = selectRolloutMove(state);
+            }
+            else
+            {
+                std::uniform_int_distribution<int> dist(0, (int)moves.size() - 1);
+                move = moves[dist(rng)];
+            }
         }
+
+
 
         if (!state.applyMove(move))
             break;
@@ -218,16 +227,7 @@ double MCTSStrategy::uctValue(Node* node, Node* parent) const
 
     double exploitation = node->value / node->visits;
 
-    double c;
-
-    if (parent->visits < 1000)
-        c = 2.5;
-    else if (parent->visits < 5000)
-        c = 1.8;
-    else
-        c = 1.2;
-
-    double exploration = c *
+    double exploration = _exploration *
         std::sqrt(std::log(parent->visits + 1) / node->visits);
 
     return exploitation + exploration;

@@ -19,8 +19,8 @@ GameManager::GameManager(long long runTimestamp)
 
     _strategy = std::make_unique<MCTSStrategy>(
         _evaluator.get(),   // important
-        4000,               // iterations
-        1.5               // exploration constant (UCT)
+        2000,               // iterations
+        1.4               // exploration constant (UCT)
     );
 
 
