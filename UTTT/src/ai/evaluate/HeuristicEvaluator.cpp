@@ -260,7 +260,7 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
                         emptyCount++;
                 }
 
-                if (myCount > 0 && oppCount > 0)
+                if (myCount == 0 && oppCount == 0)
                     continue;
 
                 if (myCount == 2 && emptyCount == 1)
@@ -277,7 +277,7 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
             score += boardWeight[j] * 3;
         }
 
-        return score + W::FREE_MOVE;
+        return score/2 + W::FREE_MOVE;
     }
 
     const SubBoard& sb = b.getBoard(boardIndex);
@@ -305,7 +305,7 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
                 emptyCount++;
         }
 
-        if (myCount > 0 && oppCount > 0)
+        if (myCount == 0 && oppCount == 0)
             continue;
 
         if (myCount == 2 && emptyCount == 1)
@@ -314,9 +314,9 @@ int HeuristicEvaluator::evaluateForcedMove(const UltimateBoard& b,
             score += W::FORCED_GOOD;
 
         if (oppCount == 2 && emptyCount == 1)
-            score -= W::FORCED_VERY_BAD;
+            score += W::FORCED_VERY_BAD;
         else if (oppCount == 1 && emptyCount == 2)
-            score -= W::FORCED_BAD;
+            score += W::FORCED_BAD;
     }
 
     score += (score >0 ) ? boardWeight[boardIndex] * 3 : -boardWeight[boardIndex] * 3;
@@ -367,6 +367,9 @@ int HeuristicEvaluator::evaluateMetaImportance(
                 myCount++;
             else if (owner == opp)
                 oppCount++;
+        }
+        if(myCount == 0 && oppCount == 0){
+            break;
         }
 
         if (myCount == 2)

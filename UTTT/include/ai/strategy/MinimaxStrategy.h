@@ -12,7 +12,13 @@ public:
     AIMove chooseMove(GameState& state) override;
 
 private:
-    int minimax(GameState& state, int depth, bool maximizing);
+    int minimax(
+    GameState& state,
+    int depth,
+    bool maximizing,
+    int alpha,
+    int beta
+);
 
     IEvaluator* _evaluator;
     int _maxDepth;
