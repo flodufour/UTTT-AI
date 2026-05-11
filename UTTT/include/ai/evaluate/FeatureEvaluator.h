@@ -59,6 +59,9 @@ private:
 
         // Positional board control
         int boardPositionBonus = 0;
+
+        int metaNearWin = 0;
+        int metaOpponentNearWin = 0;
     };
 
     struct Weights
@@ -99,45 +102,62 @@ private:
     int metaImportanceBad;
 
     int boardPositionBonus;
+
+    int metaNearWin;
+int metaOpponentNearWin;
 };
 
 static constexpr Weights w{
-    1000000,   // terminalWin
-   -1000000,   // terminalLoss
+    // Terminal
+     1000000,   // terminalWin
+    -1000000,   // terminalLoss
 
-    500,         // metaOwned
-   -500,         // metaOpponentOwned
+    // Meta ownership
+     1200,      // metaOwned
+    -1200,      // metaOpponentOwned
 
-    4000,        // metaTwoInRow
-    1000,        // metaOneInRow
-   -4500,        // metaOpponentTwoInRow
-   -1200,        // metaOpponentOneInRow
+    // Meta threats
+     8000,      // metaTwoInRow
+     1200,      // metaOneInRow
+    -15000,     // metaOpponentTwoInRow
+    -1800,      // metaOpponentOneInRow
 
-    450,        // metaFork
-   -550,        // metaOpponentFork
+    // Meta forks
+     10000,     // metaFork
+    -20000,     // metaOpponentFork
 
-    1,          // subCellControl
-   -1,          // subCellOpponentControl
+    // Sub-board positional control
+     2,         // subCellControl
+    -2,         // subCellOpponentControl
 
-    35,         // subTwoInRow
-    8,          // subOneInRow
-   -40,         // subOpponentTwoInRow
-   -10,         // subOpponentOneInRow
+    // Sub-board threats
+     120,       // subTwoInRow
+     20,        // subOneInRow
+    -180,       // subOpponentTwoInRow
+    -35,        // subOpponentOneInRow
 
-    60,         // subFork
-   -70,         // subOpponentFork
+    // Sub forks
+     250,       // subFork
+    -350,       // subOpponentFork
 
-    40,         // forcedGood
-    80,         // forcedVeryGood
-   -50,         // forcedBad
-   -120,        // forcedVeryBad
+    // Forced move system
+     40,        // forcedGood
+     180,       // forcedVeryGood
+    -60,        // forcedBad
+    -300,       // forcedVeryBad
 
-    -60,         // freeMove
+    // Free move
+    -150,       // freeMove
 
-   60,        // metaImportanceGood
-   -50,        // metaImportanceBad
+    // Meta importance pressure
+     500,       // metaImportanceGood
+    -700,       // metaImportanceBad
 
-    3           // boardPositionBonus
+    // Positional board control
+     8,        // boardPositionBonus
+
+     300,   // metaNearWin
+    -450  // metaOpponentNearWin
 };
 
     static constexpr int boardWeight[9] =

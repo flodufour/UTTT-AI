@@ -56,14 +56,56 @@ void FeatureEvaluator::extractMeta(
     int oppThreats = 0;
 
     for (int i = 0; i < 9; i++)
-    {
-        CellState owner = b.getBoard(i).checkWinner();
+{
+    const SubBoard& sb = b.getBoard(i);
+    CellState owner = sb.checkWinner();
 
-        if (owner == me)
-            f.metaOwned += boardWeight[i];
-        else if (owner == opp)
-            f.metaOpponentOwned += boardWeight[i];
+    if (owner == me)
+    {
+        f.metaOwned += boardWeight[i];
+        continue;
     }
+    else if (owner == opp)
+    {
+        f.metaOpponentOwned += boardWeight[i];
+        continue;
+    }
+
+    if (sb.isFull())
+        continue;
+
+    int myLocalThreats = 0;
+    int oppLocalThreats = 0;
+
+    for (const auto& line : WIN_LINES)
+    {
+        int myCount = 0;
+        int oppCount = 0;
+        int emptyCount = 0;
+
+        for (int idx : line)
+        {
+            CellState cell = sb.getCell(idx).getState();
+
+            if (cell == me)
+                myCount++;
+            else if (cell == opp)
+                oppCount++;
+            else
+                emptyCount++;
+        }
+
+        if (myCount == 2 && emptyCount == 1)
+            myLocalThreats++;
+
+        if (oppCount == 2 && emptyCount == 1)
+            oppLocalThreats++;
+    }
+
+    // ICI exactement
+    f.metaNearWin += myLocalThreats * boardWeight[i];
+    f.metaOpponentNearWin += oppLocalThreats * boardWeight[i];
+}
 
     for (const auto& line : WIN_LINES)
     {
@@ -109,6 +151,8 @@ void FeatureEvaluator::extractMeta(
 
     if (oppThreats >= 2)
         f.metaOpponentFork++;
+
+
 }
 
 void FeatureEvaluator::extractSubBoards(
@@ -335,6 +379,9 @@ int FeatureEvaluator::dot(const Features& f) const
     score += f.metaImportanceBad * w.metaImportanceBad;
 
     score += f.boardPositionBonus * w.boardPositionBonus;
+
+    score += f.metaNearWin * w.metaNearWin;
+    score += f.metaOpponentNearWin * w.metaOpponentNearWin;
 
 
 
