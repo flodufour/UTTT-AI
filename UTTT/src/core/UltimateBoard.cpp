@@ -128,33 +128,19 @@ bool UltimateBoard::isEmpty() const
 void UltimateBoard::undoMove(const AIMove& move, int prevActiveBoard)
 {
     _boards[move.boardIndex].undoMove(move.cellIndex);
-    _activeBoard = prevActiveBoard;
-}
-
-void UltimateBoard::setActiveBoard(int index)
-{
-    if (index < -1 || index > 8)
-    {
-        _activeBoard = -1;
-        return;
-    }
-
-    _activeBoard = index;
+    updateActiveBoard(prevActiveBoard);
 }
 
 int UltimateBoard::getMovesLeftBoard() const{
-    int co = 0;
-for (int i = 0;i<9;i++)
-{
-    for (int j = 0; j<9;j++){
-        if(_boards[i].getCell(i).getState() == CellState::EMPTY){
-            co++;
-        }
+
+    int count = 0;
+
+    for (int i = 0;i < 9; i++)
+    {
+        count += _boards[i].getMovesLetftSubBoard();
     }
 
-}
-
-return co;
+    return count;
 }
 
 

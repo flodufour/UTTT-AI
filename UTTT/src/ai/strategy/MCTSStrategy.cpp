@@ -17,24 +17,33 @@ MCTSStrategy::MCTSStrategy(IEvaluator* evaluator,
 
 AIMove MCTSStrategy::chooseMove(GameState& rootState)
 {
+
+    // creation of the tree
     Node root(rootState);
 
+    // simulation of _iterations games
     for (int i = 0; i < _iterations; i++)
     {
+        // selection of the most promising node
         Node* node = select(&root);
 
+        // if the node has sub-nodes, we explore them
         if (!node->state.isTerminal() && !node->untriedMoves.empty())
         {
             node = expand(node);
         }
 
+        // play the game from the selected start node. result is in [-1,1]
         double result = simulate(node->state);
+
+        // we climb the tree from the bottom and update stats
         backpropagate(node, result);
     }
 
     Node* best = nullptr;
     int bestVisits = -1;
 
+    // we get the most visited move
     for (auto& child : root.children)
     {
         if (child->visits > bestVisits)
@@ -49,8 +58,10 @@ AIMove MCTSStrategy::chooseMove(GameState& rootState)
 
 MCTSStrategy::Node* MCTSStrategy::select(Node* node)
 {
+
     while (!node->state.isTerminal())
     {
+        //  test all moves of the node
         if (!node->untriedMoves.empty())
             return node;
 
@@ -60,6 +71,7 @@ MCTSStrategy::Node* MCTSStrategy::select(Node* node)
         Node* best = nullptr;
         double bestScore = -std::numeric_limits<double>::infinity();
 
+        // choose the best scored children
         for (auto& child : node->children)
         {
             double score = uctValue(child.get(), node);
@@ -86,20 +98,60 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
         return node;
 
     static thread_local std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(0, (int)node->untriedMoves.size() - 1);
 
-    int idx = dist(rng);
-    AIMove move = node->untriedMoves[idx];
+    int K = std::min(5, (int)node->untriedMoves.size());
 
-    node->untriedMoves.erase(node->untriedMoves.begin() + idx);
+    std::uniform_int_distribution<int> dist(0, node->untriedMoves.size() - 1);
 
+    AIMove bestMove;
+    int bestScore = std::numeric_limits<int>::min();
+
+    std::vector<int> used;
+    used.reserve(K);
+
+    // sample K unique moves
+    for (int i = 0; i < K; i++)
+    {
+        int idx;
+        do {
+            idx = dist(rng);
+        } while (std::find(used.begin(), used.end(), idx) != used.end());
+
+        used.push_back(idx);
+
+        AIMove move = node->untriedMoves[idx];
+
+        GameState tmp = node->state;
+        if (!tmp.applyMove(move))
+            continue;
+
+        int score = _evaluator->evaluate(tmp);
+
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestMove = move;
+        }
+    }
+
+    // remove chosen move from untried list
+    auto it = std::find(node->untriedMoves.begin(),
+                         node->untriedMoves.end(),
+                         bestMove);
+
+    if (it == node->untriedMoves.end())
+        return node;
+
+    node->untriedMoves.erase(it);
+
+    // create child node
     GameState nextState = node->state;
 
-    if (!nextState.applyMove(move))
+    if (!nextState.applyMove(bestMove))
         return node;
 
     node->children.push_back(
-        std::make_unique<Node>(nextState, node, move)
+        std::make_unique<Node>(nextState, node, bestMove)
     );
 
     return node->children.back().get();
@@ -107,22 +159,19 @@ MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
 
 double MCTSStrategy::simulate(GameState state)
 {
+    // gets the root player (our ai)
     CellState rootPlayer = state.getMyPlayer();
-    int depth = 0;
+
     int movesLeft = state.getMovesLeft();
 
-    int maxDepth;
-    if (movesLeft > 60)
-        maxDepth = 20;
-    else if (movesLeft > 40)
-        maxDepth = 25;
-    else if (movesLeft > 20)
-        maxDepth = 30;
-    else
-        maxDepth = 35;
+    // smooth depth scaling
+    int maxDepth = 20 + std::log(100 - movesLeft + 1) * 5;
 
     static thread_local std::mt19937 rng(std::random_device{}());
 
+    int depth = 0;
+
+    // simulates the game by applying move after move
     while (!state.isTerminal() && depth < maxDepth)
     {
         auto moves = state.getValidMoves();
@@ -131,22 +180,33 @@ double MCTSStrategy::simulate(GameState state)
 
         AIMove move;
 
-        std::uniform_int_distribution<int> prob(0, 9);
-        if (prob(rng) < 8)
+        // noise reduction
+        if (state.getMovesLeft() <= 12)
         {
-            move = selectRolloutMove(state);
+            move = selectRolloutMove(state); // no randomness anymore
         }
-        else
-        {
-            std::uniform_int_distribution<int> dist(0, (int)moves.size() - 1);
-            move = moves[dist(rng)];
+        else {
+            std::uniform_int_distribution<int> prob(0, 9);
+            if (prob(rng) < 8)
+            {
+                move = selectRolloutMove(state);
+            }
+            else
+            {
+                std::uniform_int_distribution<int> dist(0, (int)moves.size() - 1);
+                move = moves[dist(rng)];
+            }
         }
+
+
 
         if (!state.applyMove(move))
             break;
 
         depth++;
     }
+
+    // returns reward depending on the winner
 
     CellState winner = state.getWinner();
 
@@ -167,15 +227,7 @@ double MCTSStrategy::uctValue(Node* node, Node* parent) const
 
     double exploitation = node->value / node->visits;
 
-    double c;
-    if (parent->visits < 1000)
-        c = 2.5;
-    else if (parent->visits < 5000)
-        c = 1.8;
-    else
-        c = 1.2;
-
-    double exploration = c *
+    double exploration = _exploration *
         std::sqrt(std::log(parent->visits + 1) / node->visits);
 
     return exploitation + exploration;
@@ -200,14 +252,16 @@ AIMove MCTSStrategy::selectRolloutMove(GameState& state)
 
     for (const auto& move : moves)
     {
-        GameState tmp = state;
-        if (!tmp.applyMove(move))
+        auto undo = state.applyMoveFast(move);
+
+        if (undo.move.boardIndex == -1 && undo.move.cellIndex == -1)
             continue;
 
-            int score = _evaluator->evaluate(tmp);
-
+        int score = _evaluator->evaluate(state);
 
         scored.push_back({move, score});
+
+        state.undoMove(undo);
     }
 
     if (scored.empty())
@@ -218,7 +272,7 @@ AIMove MCTSStrategy::selectRolloutMove(GameState& state)
                   return a.score > b.score;
               });
 
-    int K = std::min(3, (int)scored.size());
+    int K = std::min(4, (int)scored.size());
 
     static thread_local std::mt19937 rng(std::random_device{}());
     std::uniform_int_distribution<int> dist(0, K - 1);
@@ -231,9 +285,8 @@ void MCTSStrategy::backpropagate(Node* node, double result)
     while (node)
     {
         node->visits++;
-
         node->value += result;
-
         node = node->parent;
     }
 }
+

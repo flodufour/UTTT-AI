@@ -65,9 +65,6 @@ public:
 
     void undoMove(const AIMove& move, int prevActiveBoard);
 
-    void setActiveBoard(int index);
-
-
     int getMovesLeftBoard() const;
 
 

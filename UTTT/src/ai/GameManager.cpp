@@ -5,6 +5,7 @@
 #include "ai/evaluate/HeuristicEvaluator.h"
 #include "ai/strategy/MCTSStrategy.h"
 #include "ai/strategy/SimpleStrategy.h"
+#include "ai/evaluate/FeatureEvaluator.h"
 #include <iostream>
 
 int GameManager::s_gameId = 0;
@@ -15,13 +16,19 @@ GameManager::GameManager(long long runTimestamp)
 {
     _runTimestamp = runTimestamp;
 
-    _evaluator = std::make_unique<HeuristicEvaluator>();
+    //_evaluator = std::make_unique<HeuristicEvaluator>();
 
-    _strategy = std::make_unique<MCTSStrategy>(
-        _evaluator.get(),   // important
-        10000,               // iterations
-        1.5               // exploration constant (UCT)
-    );
+    _evaluator = std::make_unique<FeatureEvaluator>();
+
+    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 4);
+
+    //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
+
+//    _strategy = std::make_unique<MCTSStrategy>(
+//        _evaluator.get(),   // important
+//        2000,               // iterations
+//        1.4               // exploration constant (UCT)
+//    );
 
 
  }

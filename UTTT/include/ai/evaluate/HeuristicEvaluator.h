@@ -20,11 +20,17 @@ public:
     int evaluate(const GameState& state) const override;
 
 private:
-    int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp, int ply) const;
+    int evaluateTerminal(const UltimateBoard& b, CellState me, CellState opp) const;
     int evaluateMeta(const UltimateBoard& b, CellState me, CellState opp) const;
     int evaluateBoards(const UltimateBoard& b, CellState me, CellState opp) const;
     int evaluateSubBoard(const SubBoard& sb, CellState me, CellState opp) const;
     int evaluateForcedMove(const UltimateBoard& b, CellState me, CellState opp) const;
+    int evaluateMetaImportance(
+    const UltimateBoard& b,
+    int boardIndex,
+    CellState me,
+    CellState opp) const;
+
 
 private:
     struct W
@@ -35,10 +41,9 @@ private:
         // Meta board
         static constexpr int META_THREE = 1200;
         static constexpr int META_TWO   = 250;
-        static constexpr int META_ONE    = 50;
+        static constexpr int META_ONE   = 125;
 
         // Sub boards
-        static constexpr int SUB_WIN = 150;
         static constexpr int SUB_TWO = 25;
         static constexpr int SUB_ONE = 5;
 
@@ -47,12 +52,18 @@ private:
         static constexpr int CORNER = 3;
 
         // Tempo / forcing
-        static constexpr int FORCED_BAD = 80;
+        static constexpr int FORCED_GOOD = 30;
+        static constexpr int FORCED_VERY_GOOD = 120;
+        static constexpr int FORCED_BAD = -150;
+        static constexpr int FORCED_VERY_BAD = -200;
+
+        static constexpr int FREE_MOVE = -40;
     };
 
     int boardWeight[9] = {
         3, 4, 3,
-        4, 6, 4,
+        4, 5, 4,
         3, 4, 3
     };
+
 };

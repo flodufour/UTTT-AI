@@ -80,3 +80,16 @@ void SubBoard::undoMove(int index)
 
     _cells[index].setState(CellState::EMPTY);
 }
+
+int SubBoard::getMovesLetftSubBoard() const{
+
+    int count = 0;
+
+    for (int i = 0; i < 9; i ++){
+
+        if(_cells[i].getState() == CellState::EMPTY){
+            count++;
+        }
+        return count;
+    }
+}
