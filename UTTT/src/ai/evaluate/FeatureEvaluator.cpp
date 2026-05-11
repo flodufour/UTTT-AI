@@ -1,6 +1,7 @@
 #include "ai/evaluate/FeatureEvaluator.h"
 #include "core/WinPatterns.h"
 #include <algorithm>
+#include <iostream>
 
 int FeatureEvaluator::evaluate(const GameState& state) const
 {
@@ -28,7 +29,6 @@ FeatureEvaluator::extract(const GameState& state) const
     extractMeta(b, f, me, opp);
     extractSubBoards(b, f, me, opp);
     extractForcedMoves(b, f, me, opp);
-
     return f;
 }
 
@@ -231,17 +231,17 @@ void FeatureEvaluator::extractForcedMoves(
 
 
         if (myCount == 2 && emptyCount == 1)
-            f.forcedVeryGood++;
-        else if (myCount == 1 && emptyCount == 2)
             f.forcedGood++;
+        else if (myCount == 1 && emptyCount == 2)
+            f.forcedVeryGood++;
 
-        else if (oppCount == 2 && emptyCount == 1)
+        if (oppCount == 2 && emptyCount == 1)
             f.forcedVeryBad++;
         else if (oppCount == 1 && emptyCount == 2)
             f.forcedBad++;
     }
 
-    f.boardPositionBonus += boardWeight[boardIndex];
+    f.boardPositionBonus -= boardWeight[boardIndex];
 }
 
 int FeatureEvaluator::evaluateMetaImportance(
@@ -282,6 +282,8 @@ int FeatureEvaluator::evaluateMetaImportance(
             else if (owner == opp)
                 oppCount++;
         }
+
+
 
         if (myCount == 2)
             f.metaImportanceGood++;
@@ -333,6 +335,8 @@ int FeatureEvaluator::dot(const Features& f) const
     score += f.metaImportanceBad * w.metaImportanceBad;
 
     score += f.boardPositionBonus * w.boardPositionBonus;
+
+
 
     return score;
 }

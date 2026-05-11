@@ -7,6 +7,7 @@ class FeatureEvaluator : public IEvaluator
 {
 public:
     int evaluate(const GameState& state) const override;
+    int evaluate(const GameState& state, CellState perspective) const;
 
 private:
     struct Features
@@ -104,8 +105,8 @@ static constexpr Weights w{
     1000000,   // terminalWin
    -1000000,   // terminalLoss
 
-    25,         // metaOwned
-   -25,         // metaOpponentOwned
+    500,         // metaOwned
+   -500,         // metaOpponentOwned
 
     400,        // metaTwoInRow
     100,        // metaOneInRow
@@ -115,8 +116,8 @@ static constexpr Weights w{
     450,        // metaFork
    -550,        // metaOpponentFork
 
-    5,          // subCellControl
-   -5,          // subCellOpponentControl
+    1,          // subCellControl
+   -1,          // subCellOpponentControl
 
     35,         // subTwoInRow
     8,          // subOneInRow
@@ -131,10 +132,10 @@ static constexpr Weights w{
    -50,         // forcedBad
    -120,        // forcedVeryBad
 
-    60,         // freeMove
+    -60,         // freeMove
 
-   -200,        // metaImportanceGood
-   -500,        // metaImportanceBad
+   60,        // metaImportanceGood
+   -50,        // metaImportanceBad
 
     3           // boardPositionBonus
 };

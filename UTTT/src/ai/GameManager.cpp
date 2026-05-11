@@ -20,13 +20,13 @@ GameManager::GameManager(long long runTimestamp)
 
     _evaluator = std::make_unique<FeatureEvaluator>();
 
-    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 5);
+    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 4);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 
 //    _strategy = std::make_unique<MCTSStrategy>(
 //        _evaluator.get(),   // important
-//        3000,               // iterations
+//        2000,               // iterations
 //        1.4               // exploration constant (UCT)
 //    );
 

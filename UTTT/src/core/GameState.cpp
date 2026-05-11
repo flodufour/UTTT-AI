@@ -94,6 +94,12 @@ MoveUndo GameState::applyMoveFast(const AIMove& move)
 {
     MoveUndo undo;
 
+    if(!_board.isValidMove(move)){
+        undo.move = {-1, -1};
+        return undo;
+    }
+
+
     undo.move = move;
     undo.prevActiveBoard = _board.getActiveBoard();
 
