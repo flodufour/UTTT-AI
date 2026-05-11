@@ -38,18 +38,19 @@ AIMove MinimaxStrategy::chooseMove(GameState& state)
 
     for (const auto& move : moves)
     {
-        GameState tmp = state;
+        auto undoInfo = state.applyMoveFast(move);
 
-        if (!tmp.applyMove(move))
-            continue;
 
         int score = minimax(
-            tmp,
+            state,
             _maxDepth - 1,
             false,
             alpha,
             beta
         );
+
+        state.undoMove(undoInfo);
+
 
         if (score > bestScore)
         {
@@ -85,21 +86,22 @@ int MinimaxStrategy::minimax(
 
         for (const auto& move : moves)
         {
-            GameState tmp = state;
+            auto undoInfo = state.applyMoveFast(move);
 
-            if (!tmp.applyMove(move))
-                continue;
 
             best = std::max(
                 best,
                 minimax(
-                    tmp,
+                    state,
                     depth - 1,
                     false,
                     alpha,
                     beta
                 )
             );
+
+
+            state.undoMove(undoInfo);
 
             alpha = std::max(alpha, best);
 
@@ -115,21 +117,23 @@ int MinimaxStrategy::minimax(
 
         for (const auto& move : moves)
         {
-            GameState tmp = state;
 
-            if (!tmp.applyMove(move))
-                continue;
+            auto undoInfo = state.applyMoveFast(move);
+
 
             best = std::min(
                 best,
                 minimax(
-                    tmp,
+                    state,
                     depth - 1,
                     true,
                     alpha,
                     beta
                 )
             );
+
+            state.undoMove(undoInfo);
+
 
             beta = std::min(beta, best);
 
