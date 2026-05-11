@@ -108,10 +108,10 @@ static constexpr Weights w{
     500,         // metaOwned
    -500,         // metaOpponentOwned
 
-    400,        // metaTwoInRow
-    100,        // metaOneInRow
-   -450,        // metaOpponentTwoInRow
-   -120,        // metaOpponentOneInRow
+    4000,        // metaTwoInRow
+    1000,        // metaOneInRow
+   -4500,        // metaOpponentTwoInRow
+   -1200,        // metaOpponentOneInRow
 
     450,        // metaFork
    -550,        // metaOpponentFork
