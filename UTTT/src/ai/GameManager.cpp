@@ -20,7 +20,7 @@ GameManager::GameManager(long long runTimestamp)
 
     _evaluator = std::make_unique<FeatureEvaluator>();
 
-    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 7);
+    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 
