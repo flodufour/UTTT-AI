@@ -147,7 +147,7 @@ static constexpr Weights w{
     -300,       // forcedVeryBad
 
     // Free move
-    -150,       // freeMove
+    -1000,       // freeMove
 
     // Meta importance pressure
      500,       // metaImportanceGood

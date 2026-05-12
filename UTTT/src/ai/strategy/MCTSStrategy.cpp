@@ -233,9 +233,9 @@ double MCTSStrategy::uctValue(Node* node, Node* parent) const
     return exploitation + exploration;
 }
 
-uint64_t MCTSStrategy::getHash(const GameState& state) const
+uint64_t MCTSStrategy::calculateHash(const GameState& state) const
 {
-    return state.getHash();
+    return state.calculateHash();
 }
 
 AIMove MCTSStrategy::selectRolloutMove(GameState& state)

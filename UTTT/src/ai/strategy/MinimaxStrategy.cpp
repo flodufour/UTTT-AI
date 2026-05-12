@@ -18,7 +18,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
     auto start = std::chrono::high_resolution_clock::now();
     AIMove globalBestMove;
 
-    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(200) ; ++d) {
+    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(1000) ; ++d) {
 
     std::cout << d <<std::endl;
         int alpha = -9999999;
@@ -26,7 +26,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
         auto moves = state.getValidMoves();
 
-        uint64_t h = state.getHash();
+        uint64_t h = state.calculateHash();
         if (_transpositionTable.count(h)) {
             AIMove hint = _transpositionTable[h].bestMove;
             auto it = std::find(moves.begin(), moves.end(), hint);
@@ -58,7 +58,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
 int MinimaxStrategy::minimax(GameState& state, int depth, bool maximizing, int alpha, int beta)
 {
-    uint64_t hash = state.getHash();
+    uint64_t hash = state.calculateHash();
     int alphaOrig = alpha;
 
     if (_transpositionTable.count(hash)) {

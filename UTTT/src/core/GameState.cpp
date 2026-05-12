@@ -119,7 +119,7 @@ void GameState::undoMove(const MoveUndo& undo)
 
 }
 
-uint64_t GameState::getHash() const
+uint64_t GameState::calculateHash() const
 {
 
     uint64_t h = 0;

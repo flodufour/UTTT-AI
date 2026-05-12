@@ -71,7 +71,7 @@ public:
     MoveUndo applyMoveFast(const AIMove& move);
     void undoMove(const MoveUndo& undo);
 
-    uint64_t getHash() const;
+    uint64_t calculateHash() const;
 
     int getActiveBoard() const;
 

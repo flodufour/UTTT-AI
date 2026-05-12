@@ -73,7 +73,7 @@ private:
 
     double uctValue(Node* node, Node* parent) const;
 
-    uint64_t getHash(const GameState& state) const;
+    uint64_t calculateHash(const GameState& state) const;
 
     AIMove selectRolloutMove(GameState& state);
 
