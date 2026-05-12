@@ -15,12 +15,10 @@ MinimaxStrategy::MinimaxStrategy(IEvaluator* evaluator, int depth)
 
 AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
-    _transpositionTable.clear();
-
     auto start = std::chrono::high_resolution_clock::now();
     AIMove globalBestMove;
 
-    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(500) ; ++d) {
+    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(200) ; ++d) {
 
     std::cout << d <<std::endl;
         int alpha = -9999999;

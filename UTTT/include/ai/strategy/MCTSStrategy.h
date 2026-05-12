@@ -20,6 +20,9 @@ public:
 
     AIMove chooseMove(GameState& state) override;
 
+    void reset() override {
+}
+
 private:
 
     struct TTEntry

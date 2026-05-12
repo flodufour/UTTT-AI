@@ -17,8 +17,10 @@ int main()
 
     game.initialize(100, Level::MEDIUM_2, Mode::ARENA, false, "MyAi");
 
+    // 100 games
     while (!game.isAllGameFinish())
     {
+        // 1 game initialisation
         GameMove opponentMove;
         game.getMove(opponentMove);
         AIMove opponentAIMove = converter.toAIMove(opponentMove);
@@ -34,6 +36,7 @@ int main()
                     manager.applyMove(opponentAIMove);
                 }
 
+        // 1 game play
         while (!game.isFinish())
         {
             AIMove myMove = manager.chooseMove();

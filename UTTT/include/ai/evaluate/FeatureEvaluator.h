@@ -114,7 +114,7 @@ static constexpr Weights w{
 
     // Meta ownership
      1200,      // metaOwned
-    -1200,      // metaOpponentOwned
+    -1500,      // metaOpponentOwned
 
     // Meta threats
      8000,      // metaTwoInRow
@@ -124,11 +124,11 @@ static constexpr Weights w{
 
     // Meta forks
      10000,     // metaFork
-    -20000,     // metaOpponentFork
+    -12000,     // metaOpponentFork
 
     // Sub-board positional control
      2,         // subCellControl
-    -2,         // subCellOpponentControl
+    -3,         // subCellOpponentControl
 
     // Sub-board threats
      120,       // subTwoInRow
@@ -155,9 +155,8 @@ static constexpr Weights w{
 
     // Positional board control
      8,        // boardPositionBonus
-
-     300,   // metaNearWin
-    -450  // metaOpponentNearWin
+    600,   // metaNearWin
+    -850  // metaOpponentNearWin
 };
 
     static constexpr int boardWeight[9] =

@@ -13,6 +13,9 @@ public:
 
     AIMove chooseMove(GameState& state) override;
 
+    void reset() override {
+}
+
 private:
     IEvaluator* _evaluator;
 };

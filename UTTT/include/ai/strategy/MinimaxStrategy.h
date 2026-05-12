@@ -25,6 +25,10 @@ public:
 
     AIMove chooseMove(GameState& state) override;
 
+    void reset() override {
+    _transpositionTable.clear();
+}
+
 private:
     int minimax(
         GameState& state,

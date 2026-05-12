@@ -18,4 +18,6 @@ public:
 
     /// @brief Virtual destructor for safe polymorphic deletion.
     virtual ~IStrategy() = default;
+
+    virtual void reset();
 };

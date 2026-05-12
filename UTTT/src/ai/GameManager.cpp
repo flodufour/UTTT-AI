@@ -41,6 +41,11 @@ void GameManager::init(CellState mySide)
 
     _state.reset();
     _state.setPlayers(mySide);
+
+    if (_strategy) {
+        _strategy->reset();
+    }
+
     if (!_logger)
         _logger = std::make_unique<DataLogger>("dataset.jsonl");
     _logger->setGameId(_gameId, _runTimestamp);
