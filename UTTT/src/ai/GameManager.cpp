@@ -29,8 +29,6 @@ GameManager::GameManager(long long runTimestamp)
 //        2000,               // iterations
 //        1.4               // exploration constant (UCT)
 //    );
-
-
  }
 
 void GameManager::init(CellState mySide)
@@ -49,6 +47,22 @@ void GameManager::init(CellState mySide)
     if (!_logger)
         _logger = std::make_unique<DataLogger>("dataset.jsonl");
     _logger->setGameId(_gameId, _runTimestamp);
+}
+
+
+void GameManager::finalizeGame()
+{
+    if (!_logger)
+        return;
+
+    CellState w = _state.getWinner();
+
+    int result =
+        (w == CellState::X) ? 1 :
+        (w == CellState::O) ? 2 : 0;
+
+    _logger->setResult(result);
+    _logger->flush();
 }
 
 void GameManager::applyMove(const AIMove& move)
@@ -95,22 +109,6 @@ AIMove GameManager::chooseMove()
 const GameState& GameManager::getState() const
 {
     return _state;
-}
-
-
-void GameManager::finalizeGame()
-{
-    if (!_logger)
-        return;
-
-    CellState w = _state.getWinner();
-
-    int result =
-        (w == CellState::X) ? 1 :
-        (w == CellState::O) ? 2 : 0;
-
-    _logger->setResult(result);
-    _logger->flush();
 }
 
 CellState GameManager::getOpponent() const {
