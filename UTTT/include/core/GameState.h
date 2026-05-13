@@ -25,6 +25,8 @@ private:
     CellState _opponent;
     CellState _currentPlayer;
 
+    uint64_t _currentHash = 0;
+
 public:
 
      /// @brief Constructs a new game state.
@@ -79,6 +81,10 @@ public:
     bool undoNullMove(int activeBoard);
 
     int getMovesLeft() const;
+
+    uint64_t getHash() const;
+
+    void updateHash(const AIMove& move, CellState player, int oldActive, int newActive);
 
 
 

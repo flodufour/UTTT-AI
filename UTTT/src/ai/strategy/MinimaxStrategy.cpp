@@ -26,7 +26,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
         auto moves = state.getValidMoves();
 
-        uint64_t h = state.calculateHash();
+        uint64_t h = state.getHash();
         if (_transpositionTable.count(h)) {
             AIMove hint = _transpositionTable[h].bestMove;
             auto it = std::find(moves.begin(), moves.end(), hint);
@@ -58,7 +58,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
 int MinimaxStrategy::minimax(GameState& state, int depth, bool maximizing, int alpha, int beta)
 {
-    uint64_t hash = state.calculateHash();
+    uint64_t hash = state.getHash();
     int alphaOrig = alpha;
 
     if (_transpositionTable.count(hash)) {
