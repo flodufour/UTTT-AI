@@ -26,12 +26,16 @@ struct AIMove
                cellIndex >= 0 && cellIndex < 9;
     }
 
+    /// @brief Equal operator for AIMove.
+    /// @return True if both AIMoves are equals.
     bool operator==(const AIMove& other) const
     {
         return boardIndex == other.boardIndex &&
                cellIndex == other.cellIndex;
     }
 
+    /// @brief Not equal operator for AIMove.
+    /// @return True if both AIMoves are different.
     bool operator!=(const AIMove& other) const
     {
         return !(*this == other);

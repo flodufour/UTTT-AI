@@ -48,9 +48,11 @@ public:
     /// @return true if all cells are EMPTY
     bool isEmpty() const;
 
-
+    /// @brief Undoes a move on a subboard by setting the cell at index to empty
     void undoMove(int index);
 
+    /// @brief Checks the number of moves left
+    /// @return int the number of empty cells on the subboard
     int getMovesLetftSubBoard() const;
 
 };

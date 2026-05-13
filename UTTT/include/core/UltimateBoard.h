@@ -63,8 +63,13 @@ public:
     /// @return True if no moves have been played.
     bool isEmpty() const;
 
+    /// @brief Undoes a specified AIMove on the board
+    /// @param move Aimove to be undone
+    /// @param prevActiveBoard int board that was active when the move was played
     void undoMove(const AIMove& move, int prevActiveBoard);
 
+    /// @brief Checks the number of moves left on the board
+    /// @return int the number of empty cells on the board
     int getMovesLeftBoard() const;
 
 

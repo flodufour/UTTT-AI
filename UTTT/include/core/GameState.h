@@ -78,6 +78,7 @@ public:
     int getActiveBoard() const;
 
     int applyNullMove();
+
     bool undoNullMove(int activeBoard);
 
     int getMovesLeft() const;
