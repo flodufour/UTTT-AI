@@ -5,8 +5,9 @@
 #include "ai/strategy/IStrategy.h"
 #include "ai/evaluate/IEvaluator.h"
 
-#include <unordered_map>
+#include <vector>
 #include <cstdint>
+#include <cstddef>
 
 class MinimaxStrategy : public IStrategy {
 public:
@@ -15,6 +16,7 @@ public:
 
     // 2. Structure de la table de transposition
     struct TTEntry {
+        uint64_t key;
         int value;      // Score de l'évaluation
         int depth;      // Profondeur de recherche
         TTFlag flag;    // Type de valeur (Exacte, Alpha ou Beta)
@@ -25,8 +27,11 @@ public:
 
     AIMove chooseMove(GameState& state) override;
 
-    void reset() override {
-    _transpositionTable.clear();
+   void reset() override {
+    for (auto& entry : _transpositionTable) {
+        entry.key = 0;
+    }
+
 }
 
 private:
@@ -41,6 +46,8 @@ private:
     IEvaluator* _evaluator;
     int _maxDepth;
 
-    // 3. La table de transposition (clé = hash Zobrist)
-    std::unordered_map<uint64_t, TTEntry> _transpositionTable;
+    static constexpr size_t TT_SIZE = 1 << 20;
+    std::vector<TTEntry> _transpositionTable;
+
+
 };

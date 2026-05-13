@@ -49,6 +49,7 @@
 			<Add option="allegro-5.2.dll" />
 			<Add library="./libUTTTLib.a" />
 		</Linker>
+		<Unit filename="include/ai/ArenaHost.h" />
 		<Unit filename="include/ai/GameManager.h" />
 		<Unit filename="include/ai/evaluate/FeatureEvaluator.h" />
 		<Unit filename="include/ai/evaluate/HeuristicEvaluator.h" />
@@ -82,6 +83,7 @@
 		<Unit filename="include/utils/MoveConverter.h" />
 		<Unit filename="include/utils/MoveUndo.h" />
 		<Unit filename="include/utils/ZobristHasher.h" />
+		<Unit filename="src/ai/ArenaHost.cpp" />
 		<Unit filename="src/ai/GameManager.cpp" />
 		<Unit filename="src/ai/evaluate/FeatureEvaluator.cpp" />
 		<Unit filename="src/ai/evaluate/HeuristicEvaluator.cpp" />
