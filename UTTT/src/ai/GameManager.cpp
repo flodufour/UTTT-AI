@@ -20,7 +20,7 @@ GameManager::GameManager(long long runTimestamp)
 
     _evaluator = std::make_unique<FeatureEvaluator>();
 
-    _strategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
+    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 
@@ -42,8 +42,8 @@ void GameManager::init(CellState mySide)
     _state.reset();
     _state.setPlayers(mySide);
 
-    if (_strategy) {
-        _strategy->reset();
+    if (_minimaxStrategy) {
+        _minimaxStrategy->reset();
     }
 
     if (!_logger)
@@ -88,7 +88,7 @@ void GameManager::applyMove(const AIMove& move)
 
 AIMove GameManager::chooseMove()
 {
-    return _strategy->chooseMove(_state);
+    return _minimaxStrategy->chooseMove(_state);
 }
 
 

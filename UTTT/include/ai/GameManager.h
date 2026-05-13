@@ -19,7 +19,7 @@ private:
     CellState _me;
     CellState _opponent;
     std::unique_ptr<IEvaluator> _evaluator;
-    std::unique_ptr<IStrategy> _strategy;
+    std::unique_ptr<IStrategy> _minimaxStrategy;
     std::unique_ptr<DataLogger> _logger;
 
 public:
