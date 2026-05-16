@@ -13,6 +13,9 @@
 class SubBoard {
 private:
     std::array<Cell, 9> _cells;
+    bool _isFull = false;
+    CellState _winner = CellState::EMPTY;
+    int _filledCount = 0;
 
 public:
     /// @brief Constructs an empty sub-board
@@ -54,5 +57,7 @@ public:
     /// @brief Checks the number of moves left
     /// @return int the number of empty cells on the subboard
     int getMovesLetftSubBoard() const;
+
+    CellState findWinner();
 
 };
