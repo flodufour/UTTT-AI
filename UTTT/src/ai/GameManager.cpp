@@ -6,6 +6,7 @@
 #include "ai/strategy/MCTSStrategy.h"
 #include "ai/strategy/SimpleStrategy.h"
 #include "ai/evaluate/FeatureEvaluator.h"
+#include "ai/training/TrainingFeatureEvaluator.h"
 #include <iostream>
 
 int GameManager::s_gameId = 0;
@@ -18,9 +19,12 @@ GameManager::GameManager(long long runTimestamp)
 
     //_evaluator = std::make_unique<HeuristicEvaluator>();
 
-    _evaluator = std::make_unique<FeatureEvaluator>();
+    //_evaluator = std::make_unique<FeatureEvaluator>();
 
-    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
+    // Training !!
+    _evaluator = std::make_unique<TrainingFeatureEvaluator>();
+
+    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 2);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 
@@ -33,6 +37,10 @@ GameManager::GameManager(long long runTimestamp)
 
 void GameManager::init(CellState mySide)
 {
+    // Training !!
+    if (_minimaxStrategy) {
+        _minimaxStrategy->reset();
+    }
     _gameId = s_gameId++;
     _me = mySide;
     _opponent = (mySide == CellState::X) ? CellState::O : CellState::X;

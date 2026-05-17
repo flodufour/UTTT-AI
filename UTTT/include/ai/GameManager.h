@@ -60,4 +60,8 @@ public:
 
     /// @brief Destroys the GameManager and cleans up resources
     ~GameManager();
+
+    IEvaluator* getEvaluator() const {
+        return _evaluator.get();
+    }
 };

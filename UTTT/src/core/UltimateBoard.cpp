@@ -33,8 +33,9 @@ bool UltimateBoard::isValidMove(AIMove aIMove) const {
 bool UltimateBoard::playMove(AIMove aIMove, CellState player) {
     int boardIndex = aIMove.boardIndex;
     int cellIndex = aIMove.cellIndex;
-    if (!isValidMove(aIMove))
+    if (!isValidMove(aIMove)){
         return false;
+    }
 
     _boards[boardIndex].playMove(cellIndex, player);
 

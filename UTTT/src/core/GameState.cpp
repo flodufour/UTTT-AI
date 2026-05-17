@@ -130,8 +130,16 @@ std::vector<AIMove> GameState::getValidMoves() const
 
 bool GameState::isTerminal() const
 {
-    return _board.checkWinner() != CellState::EMPTY
-        || _board.isFull();
+    if (_board.checkWinner() != CellState::EMPTY || _board.isFull()) {
+        return true;
+    }
+
+    if (getValidMoves().empty()) {
+        return true;
+    }
+
+    return false;
+
 }
 
 CellState GameState::getWinner() const
