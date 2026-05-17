@@ -119,7 +119,7 @@ int MinimaxStrategy::minimax(GameState& state, int depth, bool maximizing, int a
     }
 
     if (entry.key != hash || depth >= entry.depth) {
-        entry.key = hash; // Très important !
+        entry.key = hash;
         entry.value = best;
         entry.depth = depth;
         entry.bestMove = bestMoveLocal;
