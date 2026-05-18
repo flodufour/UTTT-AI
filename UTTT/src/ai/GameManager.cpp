@@ -6,6 +6,7 @@
 #include "ai/strategy/MCTSStrategy.h"
 #include "ai/strategy/SimpleStrategy.h"
 #include "ai/evaluate/FeatureEvaluator.h"
+#include "ai/evaluate/FeatureEvaluatorLight.h"
 #include "ai/training/TrainingFeatureEvaluator.h"
 #include <iostream>
 
@@ -21,10 +22,12 @@ GameManager::GameManager(long long runTimestamp)
 
     _evaluator = std::make_unique<FeatureEvaluator>();
 
+    _lightEvaluator = std::make_unique<FeatureEvaluatorLight>();
+
     // Training !!
     //_evaluator = std::make_unique<TrainingFeatureEvaluator>();
 
-    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
+    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), _lightEvaluator.get(), 15);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 

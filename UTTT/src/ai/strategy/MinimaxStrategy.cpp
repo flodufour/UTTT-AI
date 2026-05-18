@@ -8,8 +8,8 @@
 
 
 
-MinimaxStrategy::MinimaxStrategy(IEvaluator* evaluator, int depth)
-    : _evaluator(evaluator), _maxDepth(depth)
+MinimaxStrategy::MinimaxStrategy(IEvaluator* evaluator, IEvaluator* evaluatorLight, int depth)
+    : _evaluator(evaluator), _evaluatorLight(evaluatorLight), _maxDepth(depth)
 {
     _transpositionTable.resize(TT_SIZE);
 }
@@ -21,7 +21,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
 
 
-    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(1000) ; ++d) {
+    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(200) ; ++d) {
 
     //Training !!
     //for (int d = 1; d <= _maxDepth; ++d) {
@@ -156,7 +156,7 @@ void MinimaxStrategy::orderMovesWithEval(GameState& state, std::vector<AIMove>& 
             score = maximizing ? 9999999 : -9999999;
         } else {
             auto undo = state.applyMoveFast(move);
-            score = _evaluator->evaluate(state);
+            score = _evaluatorLight->evaluate(state);
             state.undoMove(undo);
         }
 

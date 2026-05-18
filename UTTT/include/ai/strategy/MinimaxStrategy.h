@@ -23,7 +23,7 @@ public:
         AIMove bestMove;// Le meilleur coup trouvé à cette position
     };
 
-    MinimaxStrategy(IEvaluator* evaluator, int depth = 3);
+    MinimaxStrategy(IEvaluator* evaluator, IEvaluator* evaluatorLight, int depth = 3);
 
     AIMove chooseMove(GameState& state) override;
 
@@ -45,6 +45,7 @@ private:
         int beta
     );
 
+    IEvaluator* _evaluatorLight;
     IEvaluator* _evaluator;
     int _maxDepth;
 
