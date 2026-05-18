@@ -21,7 +21,7 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
 
 
 
-    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(200) ; ++d) {
+    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(4000) ; ++d) {
 
     //Training !!
     //for (int d = 1; d <= _maxDepth; ++d) {
