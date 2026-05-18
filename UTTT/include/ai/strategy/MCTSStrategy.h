@@ -1,88 +1,52 @@
 #pragma once
 
 #include "ai/strategy/IStrategy.h"
+#include "ai/evaluate/IEvaluator.h"
 #include "core/GameState.h"
 #include "core/AIMove.h"
-#include "ai/evaluate/IEvaluator.h"
-
 #include <vector>
 #include <memory>
-#include <unordered_map>
-#include <cmath>
+#include <random>
 
-class MCTSStrategy : public IStrategy
-{
+class MCTSStrategy : public IStrategy {
 public:
+    /**
+     * @param lightEvaluator Pointeur vers ton FeatureEvaluatorLight
+     * @param explorationConst Constante UCT (1.414 par défaut)
+     * @param maxTimeMs Temps maximum alloué en millisecondes (3000ms pour éviter le Timeout)
+     */
+    MCTSStrategy(IEvaluator* lightEvaluator, double explorationConst = 1.414, int maxTimeMs = 3000);
+    virtual ~MCTSStrategy() override = default;
 
-    MCTSStrategy(IEvaluator* evaluator,
-                 int iterations = 20000,
-                 double exploration = 1.4);
-
-    AIMove chooseMove(GameState& state) override;
-
-    void reset() override {
-}
+    virtual AIMove chooseMove(GameState& state) override;
+    virtual void reset() override { _rng.seed(1337); }
 
 private:
-
-    struct TTEntry
-    {
-        double value;
-        int visits;
-        int depth;
-        AIMove bestMove;
-        double bestScore;
-        double heuristic;
-    };
-
-    struct Node
-    {
-        GameState state;
+    struct MCTSNode {
         AIMove move;
-        Node* parent = nullptr;
+        MCTSNode* parent = nullptr;
+        std::vector<std::unique_ptr<MCTSNode>> children;
 
-        std::vector<std::unique_ptr<Node>> children;
-        std::vector<AIMove> untriedMoves;
+        double visits = 0.0;
+        double wins = 0.0;
 
-        int visits = 0;
-        double value = 0.0;
+        std::vector<AIMove> unvisitedMoves;
+        CellState playerToMove;
+        bool isFullyExpanded = false;
 
-        Node(const GameState& s, Node* p = nullptr, AIMove m = AIMove(-1, -1))
-            : state(s), parent(p), move(m)
-        {
-            untriedMoves = state.getValidMoves();
-        }
-
-        bool isFullyExpanded() const
-        {
-            return untriedMoves.empty();
-        }
-
-        bool isLeaf() const
-        {
-            return children.empty();
-        }
+        MCTSNode(AIMove m, MCTSNode* p, CellState player)
+            : move(m), parent(p), playerToMove(player) {}
     };
 
-    Node* select(Node* node);
-    Node* expand(Node* node);
+    MCTSNode* select(MCTSNode* node, GameState& state, std::vector<MoveUndo>& undoStack, int currentDepth, int& maxDepth);
+    MCTSNode* expand(MCTSNode* node, GameState& state, std::vector<MoveUndo>& undoStack);
+    void backpropagate(MCTSNode* node, double score);
 
-    double simulate(GameState state);
+    double getUCB1(const MCTSNode* node, const MCTSNode* child) const;
+    double normalizeScore(int rawScore) const;
 
-    void backpropagate(Node* node, double result);
-
-    double uctValue(Node* node, Node* parent) const;
-
-    uint64_t calculateHash(const GameState& state) const;
-
-    AIMove selectRolloutMove(GameState& state);
-
-    IEvaluator* _evaluator;
-
-    int _iterations;
-
-    double _exploration;
-
-    std::unordered_map<uint64_t, TTEntry> _tt;
-
+    IEvaluator* _lightEvaluator;
+    double _explorationConst;
+    int _maxTimeMs;
+    std::mt19937 _rng;
 };

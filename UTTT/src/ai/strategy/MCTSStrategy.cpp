@@ -1,292 +1,172 @@
 #include "ai/strategy/MCTSStrategy.h"
-#include "utils/ZobristHasher.h"
-
 #include <limits>
-#include <random>
+#include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 
-MCTSStrategy::MCTSStrategy(IEvaluator* evaluator,
-                           int iterations,
-                           double exploration)
-    : _evaluator(evaluator),
-      _iterations(iterations),
-      _exploration(exploration)
+MCTSStrategy::MCTSStrategy(IEvaluator* lightEvaluator, double explorationConst, int maxTimeMs)
+    : _lightEvaluator(lightEvaluator), _explorationConst(explorationConst), _maxTimeMs(maxTimeMs)
 {
+    _rng.seed(1337);
 }
 
-AIMove MCTSStrategy::chooseMove(GameState& rootState)
-{
-
-    // creation of the tree
-    Node root(rootState);
-
-    // simulation of _iterations games
-    for (int i = 0; i < _iterations; i++)
-    {
-        // selection of the most promising node
-        Node* node = select(&root);
-
-        // if the node has sub-nodes, we explore them
-        if (!node->state.isTerminal() && !node->untriedMoves.empty())
-        {
-            node = expand(node);
-        }
-
-        // play the game from the selected start node. result is in [-1,1]
-        double result = simulate(node->state);
-
-        // we climb the tree from the bottom and update stats
-        backpropagate(node, result);
-    }
-
-    Node* best = nullptr;
-    int bestVisits = -1;
-
-    // we get the most visited move
-    for (auto& child : root.children)
-    {
-        if (child->visits > bestVisits)
-        {
-            bestVisits = child->visits;
-            best = child.get();
-        }
-    }
-
-    return best ? best->move : AIMove(-1, -1);
+double MCTSStrategy::normalizeScore(int rawScore) const {
+    double scaling = 400.0;
+    return 1.0 / (1.0 + std::exp(-static_cast<double>(rawScore) / scaling));
 }
 
-MCTSStrategy::Node* MCTSStrategy::select(Node* node)
-{
+AIMove MCTSStrategy::chooseMove(GameState& state) {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    CellState aiPlayer = state.getCurrentPlayer();
 
-    while (!node->state.isTerminal())
-    {
-        //  test all moves of the node
-        if (!node->untriedMoves.empty())
-            return node;
+    auto root = std::make_unique<MCTSNode>(AIMove{-1, -1}, nullptr, aiPlayer);
+    root->unvisitedMoves = state.getValidMoves();
 
-        if (node->children.empty())
-            return node;
+    if (root->unvisitedMoves.size() == 1) {
+        return root->unvisitedMoves[0];
+    }
 
-        Node* best = nullptr;
-        double bestScore = -std::numeric_limits<double>::infinity();
+    int iterations = 0;
+    int maxDepthReached = 0;
 
-        // choose the best scored children
-        for (auto& child : node->children)
-        {
-            double score = uctValue(child.get(), node);
+    std::vector<MoveUndo> undoStack;
+    undoStack.reserve(81);
 
-            if (score > bestScore)
-            {
-                bestScore = score;
-                best = child.get();
+    while (true) {
+        if ((iterations & 63) == 0) {
+            auto now = std::chrono::high_resolution_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count();
+            if (elapsed >= _maxTimeMs) {
+                break;
             }
         }
 
-        if (!best)
-            return node;
+        MCTSNode* selectedNode = select(root.get(), state, undoStack, 0, maxDepthReached);
+        MCTSNode* expandedNode = selectedNode;
 
-        node = best;
+        if (!state.isTerminal()) {
+            expandedNode = expand(selectedNode, state, undoStack);
+            maxDepthReached = std::max(maxDepthReached, static_cast<int>(undoStack.size()));
+        }
+
+        double score = 0.5;
+        if (state.isTerminal()) {
+            CellState winner = state.getWinner();
+            if (winner == aiPlayer) score = 1.0;
+            else if (winner == CellState::EMPTY) score = 0.5;
+            else score = 0.0;
+        } else {
+            int rawScore = _lightEvaluator->evaluate(state);
+            score = normalizeScore(rawScore);
+        }
+
+        backpropagate(expandedNode, score);
+
+        while (!undoStack.empty()) {
+            state.undoMove(undoStack.back());
+            undoStack.pop_back();
+        }
+
+        iterations++;
     }
 
+    std::cout << "[MCTS_EVAL] Iterations executees : " << iterations
+              << " | Profondeur max de l'arbre : " << maxDepthReached << std::endl;
+
+    MCTSNode* bestChild = nullptr;
+    double maxVisits = -1.0;
+
+    for (const auto& child : root->children) {
+        if (child->visits > maxVisits) {
+            maxVisits = child->visits;
+            bestChild = child.get();
+        }
+    }
+
+    if (bestChild != nullptr) {
+        return bestChild->move;
+    }
+
+    return state.getValidMoves()[0];
+}
+
+MCTSStrategy::MCTSNode* MCTSStrategy::select(MCTSNode* node, GameState& state, std::vector<MoveUndo>& undoStack, int currentDepth, int& maxDepth) {
+    while (node->isFullyExpanded && !node->children.empty()) {
+        MCTSNode* bestChild = nullptr;
+        double bestUCB = -std::numeric_limits<double>::infinity();
+
+        for (const auto& child : node->children) {
+            double ucb = getUCB1(node, child.get());
+            if (ucb > bestUCB) {
+                bestUCB = ucb;
+                bestChild = child.get();
+            }
+        }
+
+        node = bestChild;
+        undoStack.push_back(state.applyMoveFast(node->move));
+        currentDepth++;
+        maxDepth = std::max(maxDepth, currentDepth);
+    }
     return node;
 }
 
-MCTSStrategy::Node* MCTSStrategy::expand(Node* node)
-{
-    if (node->untriedMoves.empty())
-        return node;
-
-    static thread_local std::mt19937 rng(std::random_device{}());
-
-    int K = std::min(5, (int)node->untriedMoves.size());
-
-    std::uniform_int_distribution<int> dist(0, node->untriedMoves.size() - 1);
-
-    AIMove bestMove;
-    int bestScore = std::numeric_limits<int>::min();
-
-    std::vector<int> used;
-    used.reserve(K);
-
-    // sample K unique moves
-    for (int i = 0; i < K; i++)
-    {
-        int idx;
-        do {
-            idx = dist(rng);
-        } while (std::find(used.begin(), used.end(), idx) != used.end());
-
-        used.push_back(idx);
-
-        AIMove move = node->untriedMoves[idx];
-
-        GameState tmp = node->state;
-        if (!tmp.applyMove(move))
-            continue;
-
-        int score = _evaluator->evaluate(tmp);
-
-        if (score > bestScore)
-        {
-            bestScore = score;
-            bestMove = move;
+MCTSStrategy::MCTSNode* MCTSStrategy::expand(MCTSNode* node, GameState& state, std::vector<MoveUndo>& undoStack) {
+    if (node->unvisitedMoves.empty() && !node->isFullyExpanded) {
+        node->unvisitedMoves = state.getValidMoves();
+        if (node->unvisitedMoves.empty()) {
+            node->isFullyExpanded = true;
+            return node;
         }
     }
 
-    // remove chosen move from untried list
-    auto it = std::find(node->untriedMoves.begin(),
-                         node->untriedMoves.end(),
-                         bestMove);
+    std::uniform_int_distribution<size_t> dist(0, node->unvisitedMoves.size() - 1);
+    size_t index = dist(_rng);
+    AIMove move = node->unvisitedMoves[index];
 
-    if (it == node->untriedMoves.end())
-        return node;
+    node->unvisitedMoves[index] = node->unvisitedMoves.back();
+    node->unvisitedMoves.pop_back();
 
-    node->untriedMoves.erase(it);
-
-    // create child node
-    GameState nextState = node->state;
-
-    if (!nextState.applyMove(bestMove))
-        return node;
-
-    node->children.push_back(
-        std::make_unique<Node>(nextState, node, bestMove)
-    );
-
-    return node->children.back().get();
-}
-
-double MCTSStrategy::simulate(GameState state)
-{
-    // gets the root player (our ai)
-    CellState rootPlayer = state.getMyPlayer();
-
-    int movesLeft = state.getMovesLeft();
-
-    // smooth depth scaling
-    int maxDepth = 20 + std::log(100 - movesLeft + 1) * 5;
-
-    static thread_local std::mt19937 rng(std::random_device{}());
-
-    int depth = 0;
-
-    // simulates the game by applying move after move
-    while (!state.isTerminal() && depth < maxDepth)
-    {
-        auto moves = state.getValidMoves();
-        if (moves.empty())
-            break;
-
-        AIMove move;
-
-        // noise reduction
-        if (state.getMovesLeft() <= 12)
-        {
-            move = selectRolloutMove(state); // no randomness anymore
-        }
-        else {
-            std::uniform_int_distribution<int> prob(0, 9);
-            if (prob(rng) < 8)
-            {
-                move = selectRolloutMove(state);
-            }
-            else
-            {
-                std::uniform_int_distribution<int> dist(0, (int)moves.size() - 1);
-                move = moves[dist(rng)];
-            }
-        }
-
-
-
-        if (!state.applyMove(move))
-            break;
-
-        depth++;
+    if (node->unvisitedMoves.empty()) {
+        node->isFullyExpanded = true;
     }
 
-    // returns reward depending on the winner
+    CellState nextPlayer = (node->playerToMove == CellState::X) ? CellState::O : CellState::X;
 
-    CellState winner = state.getWinner();
+    auto child = std::make_unique<MCTSNode>(move, node, nextPlayer);
+    MCTSNode* childPtr = child.get();
+    node->children.push_back(std::move(child));
 
-    if (winner == rootPlayer)
-        return 1.0;
-    if (winner != CellState::EMPTY)
-        return -1.0;
-
-    int score = _evaluator->evaluate(state);
-
-    return std::tanh(score / 1000.0);
+    undoStack.push_back(state.applyMoveFast(move));
+    return childPtr;
 }
 
-double MCTSStrategy::uctValue(Node* node, Node* parent) const
-{
-    if (node->visits == 0)
-        return std::numeric_limits<double>::infinity();
-
-    double exploitation = node->value / node->visits;
-
-    double exploration = _exploration *
-        std::sqrt(std::log(parent->visits + 1) / node->visits);
-
-    return exploitation + exploration;
-}
-
-uint64_t MCTSStrategy::calculateHash(const GameState& state) const
-{
-    return state.calculateHash();
-}
-
-AIMove MCTSStrategy::selectRolloutMove(GameState& state)
-{
-    auto moves = state.getValidMoves();
-
-    struct ScoredMove {
-        AIMove move;
-        int score;
-    };
-
-    std::vector<ScoredMove> scored;
-    scored.reserve(moves.size());
-
-    for (const auto& move : moves)
-    {
-        auto undo = state.applyMoveFast(move);
-
-        if (undo.move.boardIndex == -1 && undo.move.cellIndex == -1)
-            continue;
-
-        int score = _evaluator->evaluate(state);
-
-        scored.push_back({move, score});
-
-        state.undoMove(undo);
-    }
-
-    if (scored.empty())
-        return moves[0];
-
-    std::sort(scored.begin(), scored.end(),
-              [](auto& a, auto& b) {
-                  return a.score > b.score;
-              });
-
-    int K = std::min(4, (int)scored.size());
-
-    static thread_local std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(0, K - 1);
-
-    return scored[dist(rng)].move;
-}
-
-void MCTSStrategy::backpropagate(Node* node, double result)
-{
-    while (node)
-    {
-        node->visits++;
-        node->value += result;
+void MCTSStrategy::backpropagate(MCTSNode* node, double score) {
+    while (node != nullptr) {
+        node->visits += 1.0;
+        node->wins += score;
         node = node->parent;
     }
 }
 
+double MCTSStrategy::getUCB1(const MCTSNode* node, const MCTSNode* child) const {
+    if (child->visits == 0.0) {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    double exploitation = child->wins / child->visits;
+
+    const MCTSNode* root = node;
+    while (root->parent != nullptr) {
+        root = root->parent;
+    }
+    CellState aiPlayer = root->playerToMove;
+
+    if (node->playerToMove != aiPlayer) {
+        exploitation = 1.0 - exploitation;
+    }
+
+    double exploration = _explorationConst * std::sqrt(std::log(node->visits) / child->visits);
+    return exploitation + exploration;
+}
