@@ -19,12 +19,12 @@ GameManager::GameManager(long long runTimestamp)
 
     //_evaluator = std::make_unique<HeuristicEvaluator>();
 
-    //_evaluator = std::make_unique<FeatureEvaluator>();
+    _evaluator = std::make_unique<FeatureEvaluator>();
 
     // Training !!
-    _evaluator = std::make_unique<TrainingFeatureEvaluator>();
+    //_evaluator = std::make_unique<TrainingFeatureEvaluator>();
 
-    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 2);
+    _minimaxStrategy = std::make_unique<MinimaxStrategy>(_evaluator.get(), 15);
 
     //_strategy = std::make_unique<SimpleStrategy>(_evaluator.get());
 

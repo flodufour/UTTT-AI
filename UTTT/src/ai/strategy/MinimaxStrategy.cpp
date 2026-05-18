@@ -19,11 +19,12 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
     auto start = std::chrono::high_resolution_clock::now();
     AIMove globalBestMove;
 
+
+
+    for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(1000) ; ++d) {
+
     //Training !!
-
-    //for (int d = 1; d <= _maxDepth && (std::chrono::high_resolution_clock::now() - start) < std::chrono::milliseconds(200) ; ++d) {
-
-    for (int d = 1; d <= _maxDepth; ++d) {
+    //for (int d = 1; d <= _maxDepth; ++d) {
 
     std::cout << d <<std::endl;
         int alpha = -9999999;
@@ -34,12 +35,12 @@ AIMove MinimaxStrategy::chooseMove(GameState& state) {
         uint64_t h = state.getHash();
         TTEntry& entry = _transpositionTable[h & (TT_SIZE - 1)];
 
+        AIMove hint;
         if (entry.key == h) {
-            AIMove hint = entry.bestMove;
-            auto it = std::find(moves.begin(), moves.end(), hint);
-            if (it != moves.end()) std::iter_swap(moves.begin(), it);
+            hint = entry.bestMove;
         }
 
+        orderMovesWithEval(state, moves, hint, true, 1);
         AIMove bestMoveIteration;
         int bestScoreIteration = -9999999;
 
@@ -84,11 +85,12 @@ int MinimaxStrategy::minimax(GameState& state, int depth, bool maximizing, int a
     auto moves = state.getValidMoves();
     if (moves.empty()) return _evaluator->evaluate(state);
 
+    AIMove hint;
     if (entry.key == hash) {
-        auto it = std::find(moves.begin(), moves.end(), entry.bestMove);
-        if (it != moves.end()) std::iter_swap(moves.begin(), it);
+        hint = entry.bestMove;
     }
 
+    orderMovesWithEval(state, moves, hint, maximizing, depth);
     int best;
     AIMove bestMoveLocal;
 
@@ -134,4 +136,44 @@ int MinimaxStrategy::minimax(GameState& state, int depth, bool maximizing, int a
     }
 
     return best;
+}
+
+struct ScoredMove {
+    AIMove move;
+    int score;
+};
+
+void MinimaxStrategy::orderMovesWithEval(GameState& state, std::vector<AIMove>& moves, const AIMove& ttHint, bool maximizing, int depth) {
+    if (moves.size() <= 1) return;
+
+    std::vector<ScoredMove> scoredMoves;
+    scoredMoves.reserve(moves.size());
+
+    for (const auto& move : moves) {
+        int score = 0;
+
+        if (move == ttHint) {
+            score = maximizing ? 9999999 : -9999999;
+        } else {
+            auto undo = state.applyMoveFast(move);
+            score = _evaluator->evaluate(state);
+            state.undoMove(undo);
+        }
+
+        scoredMoves.push_back({move, score});
+    }
+
+    if (maximizing) {
+        std::sort(scoredMoves.begin(), scoredMoves.end(), [](const ScoredMove& a, const ScoredMove& b) {
+            return a.score > b.score;
+        });
+    } else {
+        std::sort(scoredMoves.begin(), scoredMoves.end(), [](const ScoredMove& a, const ScoredMove& b) {
+            return a.score < b.score;
+        });
+    }
+
+    for (size_t i = 0; i < moves.size(); ++i) {
+        moves[i] = scoredMoves[i].move;
+    }
 }

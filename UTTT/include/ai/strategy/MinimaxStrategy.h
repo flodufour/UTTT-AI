@@ -35,6 +35,8 @@ public:
 }
 
 private:
+    void orderMovesWithEval(GameState& state, std::vector<AIMove>& moves, const AIMove& ttHint, bool maximizing, int depth);
+
     int minimax(
         GameState& state,
         int depth,
